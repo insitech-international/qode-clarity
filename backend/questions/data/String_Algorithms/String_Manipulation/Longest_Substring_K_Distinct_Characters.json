@@ -1,0 +1,29 @@
+{
+    "id": 792,  // Unique identifier for the question
+    "title": "// Solution for Longest Substring K Distinct Characters",  // Title of the question
+    "difficulty": "Hard",  // Difficulty level of the question
+    "category": "Tree",  // Category under which the question falls
+    "similar_question": {  // Object containing similar question information
+        "platforms": ["PlatformA", "PlatformB"],  // List of platforms where similar questions can be found
+        "companies": ["Company1", "Company2", "Company3"]  // List of companies that may have similar questions
+    },
+    "real_life_domains": [],  // Array to capture real-life domains where such cases may be encountered
+    "description": "You are given a `root` to a binary tree and an integer `k`. A node of this tree is called **great enough** if the following holds:\n* Its subtree has **at least** `k` nodes.\n* Its value is **greater** than the value of **at least** `k` nodes in its subtree.\nReturn the number of nodes in this tree that are great enough.",  // Description of the problem statement
+    "examples": [  // Array of example cases for the problem
+        {
+            "input": "root = [7,6,5,4,3,2,1], k = 2",  // Example input
+            "output": "3",  // Expected output for the example
+            "explanation": "..."  // Explanation of the example case
+        },
+        {
+            "input": "root = [1,2,3], k = 1",  // Another example input
+            "output": "0",  // Expected output for this example
+            "explanation": "..."  // Explanation of the example case
+        }
+    ],
+    "constraints": [  // Array of constraints related to the problem
+        "The number of nodes in the tree is in the range `[1, 10^4]`.",  // Constraint on the number of nodes
+        "`1 <= Node.val <= 10^4`",  // Constraint on the values of the nodes
+        "`1 <= k <= 10`"  // Constraint on the value of k
+    ]
+}
