@@ -1,0 +1,36 @@
+{
+    "id": 1311,
+    "title": "Group Anagrams for Inventory Management", 
+    "difficulty": "Medium",
+    "category": "String Algorithm",
+    "subcategory": "String Manipulation",
+    "similar_question": {
+        "platforms": [{"Leetcode": 49}, "PlatformB"], 
+        "companies": ["Amazon", "Microsoft", "Apple", "Google", "Bloomberg", "Oracle", "Goldman Sachs", "Uber", "Meta", "Atlassian"]
+    },
+    "real_life_domains": ["E-commerce", "Inventory Management"], 
+    "scenario": "In an e-commerce platform, you have a feature that allows users to search for products using tags. However, many products have similar names that can be rearranged. For example, \"bat\" can be confused with \"tab.\" To enhance user experience, the platform wants to group products based on their anagrams so that when a user searches for a product, they also see similar products that may not have the exact same name but are rearrangements of each other.", 
+    "task": "Given an array of product names, write a function that groups the product names that are anagrams of each other. You can return the grouped names in any order.", 
+    "examples": [
+        {
+            "input": "strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+            "output": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]",
+            "explanation": "The strings \"nat\" and \"tan\" are anagrams, as well as \"ate\", \"eat\", and \"tea\"."  
+        },
+        {
+            "input": "strs = [\"\"]",
+            "output": "[[\"\"]]", 
+            "explanation": "There is only one empty string."
+        },
+        {
+            "input": "strs = [\"a\"]",
+            "output": "[[\"a\"]]", 
+            "explanation": "There is only one single character."
+        }
+    ],
+    "constraints": [
+        "1 <= strs.length <= 10^4",
+        "0 <= strs[i].length <= 100",
+        "strs[i] consists of lowercase English letters." 
+    ]
+}
