@@ -25,11 +25,17 @@ SECRET_KEY = 'django-insecure-5o_47h37x*(g@qgh*h_#vwt*)w=_6!nd(u=mh(3%&t2qqra51a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',  # IPv6 equivalent of localhost
+    'localhost:3000',
+    'localhost:3001',
+    'localhost:8000'
+]
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,9 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'questions',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +60,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'python_query_vault.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Optional, for API browsing
+    ],
+}
 
 TEMPLATES = [
     {
@@ -121,3 +138,31 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS Settings
+CORS_ORIGIN_ALLOW_ALL = True  # Use this only for debugging!
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins for development purposes
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3001",
+#     "http://localhost:3000",
+# ]  # Add these lines
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]

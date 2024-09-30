@@ -411,3 +411,103 @@ algorithm_api/
 "`1 <= k <= 10`" // Constraint on the value of k
 ]
 }
+
+{
+id: "game_theory",
+name: "Game Theory",
+subcategories: [
+{ id: "minimax_algorithm", name: "Minimax Algorithm" },
+{ id: "alpha_beta_pruning", name: "Alpha-Beta Pruning" },
+{ id: "nash_equilibrium", name: "Nash Equilibrium" },
+{ id: "zero_sum_games", name: "Zero-Sum Games" },
+{ id: "cooperative_games", name: "Cooperative Games" },
+],
+},
+{
+id: "computational_geometry",
+name: "Computational Geometry",
+subcategories: [
+{ id: "convex_hull", name: "Convex Hull" },
+{ id: "line_intersection", name: "Line Intersection" },
+{ id: "polygon_area", name: "Polygon Area" },
+{ id: "voronoi_diagram", name: "Voronoi Diagram" },
+{ id: "delaunay_triangulation", name: "Delaunay Triangulation" },
+],
+},
+{
+id: "bit_manipulation",
+name: "Bit Manipulation",
+subcategories: [
+{ id: "bitwise_operations", name: "Bitwise Operations" },
+{ id: "counting_set_bits", name: "Counting Set Bits" },
+{ id: "bitmasking", name: "Bitmasking" },
+{ id: "power_of_two", name: "Power of Two" },
+{ id: "swap_numbers", name: "Swap Numbers" },
+],
+},
+{
+id: "database_algorithms",
+name: "Database Algorithms",
+subcategories: [
+{ id: "b_tree", name: "B-Tree" },
+{ id: "hashing", name: "Hashing" },
+{ id: "database_indexing", name: "Database Indexing" },
+{ id: "normalization", name: "Normalization" },
+{ id: "query_optimization", name: "Query Optimization" },
+],
+},
+{
+id: "theory_of_computation",
+name: "Theory of Computation",
+subcategories: [
+{ id: "automata_theory", name: "Automata Theory" },
+{ id: "turing_machines", name: "Turing Machines" },
+{ id: "complexity_classes", name: "Complexity Classes" },
+{ id: "decidability", name: "Decidability" },
+{ id: "p_vs_npc", name: "P vs NP Problem" },
+],
+},
+{
+id: "network_flow",
+name: "Network Flow",
+subcategories: [
+{ id: "ford_fulkerson", name: "Ford-Fulkerson" },
+{ id: "edmonds_karp", name: "Edmonds-Karp" },
+{ id: "max_flow_min_cut", name: "Max Flow Min Cut Theorem" },
+{ id: "bipartite_matching", name: "Bipartite Matching" },
+{ id: "network_design", name: "Network Design" },
+],
+},
+{
+id: "machine_learning_algorithms",
+name: "Machine Learning Algorithms",
+subcategories: [
+{ id: "linear_regression", name: "Linear Regression" },
+{ id: "decision_trees", name: "Decision Trees" },
+{ id: "k_means_clustering", name: "K-Means Clustering" },
+{ id: "neural_networks", name: "Neural Networks" },
+{ id: "support_vector_machines", name: "Support Vector Machines" },
+],
+},
+{
+id: "encryption_and_security",
+name: "Encryption and Security",
+subcategories: [
+{ id: "symmetric_encryption", name: "Symmetric Encryption" },
+{ id: "asymmetric_encryption", name: "Asymmetric Encryption" },
+{ id: "hash_functions", name: "Hash Functions" },
+{ id: "digital_signatures", name: "Digital Signatures" },
+{ id: "public_key_infrastructure", name: "Public Key Infrastructure" },
+],
+},
+{
+id: "algorithmic_design",
+name: "Algorithmic Design",
+subcategories: [
+{ id: "divide_and_conquer", name: "Divide and Conquer" },
+{ id: "dynamic_programming", name: "Dynamic Programming" },
+{ id: "greedy_methods", name: "Greedy Methods" },
+{ id: "backtracking", name: "Backtracking" },
+{ id: "branch_and_bound", name: "Branch and Bound" },
+],
+},
