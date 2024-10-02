@@ -511,3 +511,40 @@ subcategories: [
 { id: "branch_and_bound", name: "Branch and Bound" },
 ],
 },
+
+question template:
+
+{
+"id": ,
+"title": "",
+"difficulty": "",
+"category": "",
+"subcategory": "",
+"similar question": {
+"platforms": [{"Leetcode": 134}, "add more...."],
+"companies": []
+},
+"real_life_domains": ["", "", ""],
+"scenario": "",
+"task": "",
+"examples": [
+{
+"input": "",
+"output": "",
+"explanation": ""
+ },
+{
+"input": "",
+"output": "",
+"explanation": ""
+},
+{
+"input": "",
+"output": "",
+"explanation": ""
+}
+],
+"constraints": [
+]
+
+}

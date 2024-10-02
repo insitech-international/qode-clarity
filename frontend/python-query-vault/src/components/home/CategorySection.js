@@ -1,6 +1,69 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import LoadingSpinner from "./../../components/common/LoadingSpinner";
+import styled from "styled-components";
+
+const SectionWrapper = styled.div`
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const Content = styled.div`
+  padding: 1rem;
+`;
+
+const Title = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+`;
+
+const Description = styled.p`
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+`;
+
+const SampleCard = styled.div`
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 0.5rem;
+`;
+
+const MindMapImage = styled.img`
+  max-width: 100%;
+  border-radius: 4px;
+  margin-top: 1rem;
+`;
+
+const ExploreButton = styled.button`
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #218838;
+  }
+`;
 
 const CategorySection = ({ category }) => {
   const urlSlug = category.name
@@ -9,47 +72,27 @@ const CategorySection = ({ category }) => {
     .replace(/&/g, "and");
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 duration-300 cursor-pointer">
-      <Link to={`/category/${urlSlug}`} className="w-full h-full p-0">
-        <div className="p-4">
-          <h2 className="text-xl font-semibold mb-2">{category.name}</h2>
-          <p className="text-sm text-gray-600 mb-4">{category.description}</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[0, 1, 2, 3, 4].map((index) => (
-            <CategoryCard key={index} category={category} index={index} />
-          ))}
-        </div>
+    <SectionWrapper>
+      <Link to={`/category/${urlSlug}`}>
+        <Content>
+          <Title>{category.name}</Title>
+          <Description>{category.description}</Description>
+          <Grid>
+            {category.sampleQuestions.slice(0, 5).map((question, index) => (
+              <SampleCard key={index}>
+                <h3>{question.title}</h3>
+                <p>{question.description}</p>
+              </SampleCard>
+            ))}
+          </Grid>
+          <MindMapImage
+            src={`/images/mindmaps/${category.id}.svg`}
+            alt={`Mindmap for ${category.name}`}
+          />
+          <ExploreButton>Explore</ExploreButton>
+        </Content>
       </Link>
-      <div className="mt-auto flex justify-center">
-        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
-          Explore
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const CategoryCard = ({ category, index }) => {
-  const cardClass = ["bg-white rounded-lg shadow-md"];
-  const titleClass = ["text-xl font-semibold"];
-
-  return (
-    <div className={`${cardClass.join(" ")}`}>
-      <div className="p-4">
-        <h3 className={titleClass.join(" ")}>
-          {category.sampleQuestions[index]?.title || "Sample Question"}
-        </h3>
-        <p className="text-sm text-gray-600">
-          {category.sampleQuestions[index]?.description || "Description"}
-        </p>
-      </div>
-      <img
-        src={`images/mindmaps/${category.id}.svg`}
-        alt={`Mindmap for ${category.name}`}
-        className="max-w-full rounded-lg shadow-md"
-      />
-    </div>
+    </SectionWrapper>
   );
 };
 

@@ -7,8 +7,8 @@ class Solution:
     problem_explanation: str
     approach_explanation: str
     algorithm_steps: str
-    complexity_analysis: str
     code_implementation: str
+    complexity_analysis: str
 
 def get_solution(question_id: int) -> Solution:
     return Solution(
@@ -59,18 +59,6 @@ Process:
 3. Return the values of the dictionary (lists of anagrams).
         """.strip(),
 
-# COMPLEXITY:
-        complexity_analysis="""
-Time Complexity: O(n * m)
-- n is the number of strings in the input list.
-- m is the average length of the strings.
-- We iterate through each string (n) and then through each character in the string (m).
-
-Space Complexity: O(n * m)
-- In the worst case, we store all strings in our dictionary.
-- The space for character count arrays is negligible compared to storing the strings.
-        """.strip(),
-
 # IMPLEMENTATION:
         code_implementation="""
 class Solution:
@@ -88,10 +76,19 @@ class Solution:
 solution = Solution()
 result = solution.groupAnagrams(["eat","tea","tan","ate","nat","bat"])
 print(result)  # Output: [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]
-        """.strip()
+        """.strip(),
+
+# COMPLEXITY:
+        complexity_analysis="""
+Time Complexity: O(n * m)
+- n is the number of strings in the input list.
+- m is the average length of the strings.
+- We iterate through each string (n) and then through each character in the string (m).
+
+Space Complexity: O(n * m)
+- In the worst case, we store all strings in our dictionary.
+- The space for character count arrays is negligible compared to storing the strings.
+        """.strip(),
+
     )
 
-# Example of how to use this structure
-solution = get_solution(1311)  # Assuming 1311 is the ID for the Group Anagrams problem
-print(solution.problem_classification)
-print(solution.problem_explanation)

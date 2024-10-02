@@ -1,0 +1,31 @@
+/* CategoryCarousel.css */
+.carousel-container {
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .carousel-slide {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .carousel-image {
+    width: 70vw; /* Each image takes up 70% of the viewport width */
+    max-height: 60vh; /* Optional: limit the height */
+    object-fit: cover; /* Ensure the image covers the space */
+  }
+  
+  .carousel-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1.5rem;
+  }
+  
