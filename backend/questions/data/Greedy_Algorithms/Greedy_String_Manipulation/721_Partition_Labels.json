@@ -1,0 +1,35 @@
+{
+    "id": 713,
+    "title": "Partition Labels for Project Management",
+    "difficulty": "Medium",
+    "category": "Greedy Algorithm",
+    "subcategory": "String Manipulation",
+    "similar question": {
+        "platforms": [{"Leetcode": 763}, "PlatformB"],
+        "companies": ["Amazon", "Microsoft", "Apple", "Google", "Bloomberg", "Oracle", "Goldman Sachs", "Uber", "Meta", "Atlassian"]
+    },
+    "real_life_domains": ["Project Management", "Logistics", "Content Distribution"], 
+    "scenario": "You are a project manager working on a content distribution strategy. Each task in your project is represented as a string where each character represents a unique task. The goal is to partition the tasks into the smallest number of sections such that each task is completed without interruption. A task can be interrupted if it appears in multiple sections.",
+    "task": "Create an algorithm that determines how many sections can be formed by partitioning the tasks, ensuring that each task appears in only one section at a time.",
+    "examples": [
+        {
+            "input": "abac",
+            "output": 2,
+            "explanation": "The string can be partitioned into 'aba' and 'c', allowing all tasks to be completed in two sections."
+        },
+        {
+            "input": "eccbade",
+            "output": 3,
+            "explanation": "The string can be partitioned into 'ecc', 'b', and 'ade', ensuring all tasks are completed without overlap."
+        },
+        {
+            "input": "abcdefg",
+            "output": 1,
+            "explanation": "All tasks are unique and can be completed in one section."
+        }
+    ],
+    "constraints": [
+        "The input string will contain only lowercase English letters.",
+        "The maximum length of the input string is 1000."
+    ]
+}

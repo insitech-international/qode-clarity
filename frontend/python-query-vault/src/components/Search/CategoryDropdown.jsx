@@ -1,4 +1,39 @@
 import React, { useState } from "react";
+import styled from "styled-components";
+
+const DropdownWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Select = styled.select`
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border: none;
+  border-radius: 4px;
+`;
+
+const Input = styled.input`
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border: none;
+  border-radius: 4px;
+`;
+
+const Button = styled.button`
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2980b9;
+  }
+`;
+
 
 const categories = [
   {
@@ -153,40 +188,59 @@ const categories = [
 ];
 
 const CategoryDropdown = () => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleCategoryChange = (e) => {
     const selectedCategoryId = e.target.value;
-    const category = categories.find((cat) => cat.id === selectedCategoryId);
-    setSelectedCategory(category);
+    setSelectedCategory(selectedCategoryId);
+    setSelectedSubcategory("");
   };
 
+  const handleSubcategoryChange = (e) => {
+    setSelectedSubcategory(e.target.value);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearch = () => {
+    // Implement search functionality
+    console.log("Searching:", { selectedCategory, selectedSubcategory, searchTerm });
+  };
+
+  const currentCategory = categories.find((cat) => cat.id === selectedCategory);
+
   return (
-    <div className="category-dropdown">
-      <label htmlFor="#">Select Category:</label>
-      <select id="category" onChange={handleCategoryChange}>
-        <option value="">--Select a Category--</option>
+    <DropdownWrapper>
+      <Select value={selectedCategory} onChange={handleCategoryChange}>
+        <option value="">Select Category</option>
         {categories.map((category) => (
           <option key={category.id} value={category.id}>
             {category.name}
           </option>
         ))}
-      </select>
-
-      {selectedCategory && (
-        <div className="subcategory-dropdown">
-          <label htmlFor="#">Select Subcategory:</label>
-          <select id="subcategory">
-            <option value="">--Select a Subcategory--</option>
-            {selectedCategory.subcategories.map((subcategory) => (
-              <option key={subcategory.id} value={subcategory.id}>
-                {subcategory.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      </Select>
+      {currentCategory && (
+        <Select value={selectedSubcategory} onChange={handleSubcategoryChange}>
+          <option value="">Select Subcategory</option>
+          {currentCategory.subcategories.map((subcategory) => (
+            <option key={subcategory.id} value={subcategory.id}>
+              {subcategory.name}
+            </option>
+          ))}
+        </Select>
       )}
-    </div>
+      <Input
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
+      <Button onClick={handleSearch}>Search</Button>
+    </DropdownWrapper>
   );
 };
 
