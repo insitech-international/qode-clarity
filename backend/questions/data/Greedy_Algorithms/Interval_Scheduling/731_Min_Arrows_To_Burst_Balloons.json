@@ -2,9 +2,9 @@
     "id": 715,
     "title": "Min Arrows to Burst Balloons for Event Management",
     "difficulty": "Medium",
-    "category": "Greedy Algorithm",
+    "category": "Greedy Algorithms",
     "subcategory": "Interval Scheduling",
-    "similar question": {
+    "similar_question": {
         "platforms": [{"Leetcode": 452}, "PlatformB"],
         "companies": ["Amazon", "Microsoft", "Apple", "Google", "Bloomberg", "Oracle", "Goldman Sachs", "Uber", "Meta", "Atlassian"]
     },

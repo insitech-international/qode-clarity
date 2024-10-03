@@ -1,51 +1,55 @@
 import React from "react";
-import styled from "styled-components";
-
-const SectionWrapper = styled.section`
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-`;
-
-const QuestionList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-`;
-
-const QuestionCard = styled.div`
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-
-  h3 {
-    margin-bottom: 0.5rem;
-  }
-`;
+import { Link } from "react-router-dom";
+import { Card, CardContent, Typography, Chip, Grid } from "@mui/material";
 
 const FeaturedQuestions = ({ questions = [] }) => {
   if (questions.length === 0) {
     return (
-      <SectionWrapper>
-        <h2>Featured Questions</h2>
-        <p>No featured questions available at the moment.</p>
-      </SectionWrapper>
+      <section>
+        <Typography variant="h4" gutterBottom>
+          Featured Questions
+        </Typography>
+        <Typography variant="body1">No featured questions available at the moment.</Typography>
+      </section>
     );
   }
 
   return (
-    <SectionWrapper>
-      <h2>Featured Questions</h2>
-      <QuestionList>
-        {questions.slice(0, 10).map((question) => (
-          <QuestionCard key={question.id}>
-            <h3>{question.title}</h3>
-            <p>{question.description}</p>
-          </QuestionCard>
+    <section>
+      <Typography variant="h4" gutterBottom>
+        Featured Questions
+      </Typography>
+      <Grid container spacing={3}>
+        {questions.slice(0, 9).map((question) => (
+          <Grid item xs={12} sm={6} lg={4} key={question.id}>
+            <Card variant="outlined" sx={{ height: '100%', transition: '0.3s', '&:hover': { boxShadow: 6 } }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  {question.title}
+                </Typography>
+                <Chip
+                  label={question.difficulty}
+                  color={question.difficulty === "Hard" ? "error" : question.difficulty === "Medium" ? "warning" : "success"}
+                  size="small"
+                  sx={{ marginBottom: '1rem' }}
+                />
+                <Typography variant="body2" paragraph>
+                  {question.scenario.slice(0, 100)}...
+                </Typography>
+                <div>
+                  {question.real_life_domains.slice(0, 3).map((domain, index) => (
+                    <Chip key={index} label={domain} variant="outlined" size="small" sx={{ marginRight: '0.5rem' }} />
+                  ))}
+                </div>
+                <Link to={`/question/${question.id}`} style={{ textDecoration: 'none', color: '#1976d2', marginTop: '1rem', display: 'inline-block' }}>
+                  View Details
+                </Link>
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-      </QuestionList>
-    </SectionWrapper>
+      </Grid>
+    </section>
   );
 };
 

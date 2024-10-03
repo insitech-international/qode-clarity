@@ -2,82 +2,119 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from django.core.exceptions import ValidationError
 from .utils import (
     get_question,
     get_solution,
     get_questions_list,
     get_categories,
-    get_mind_map_data
 )
-import dataclasses
+from dataclasses import asdict
+import logging
 
-class StandardResultsSetPagination(PageNumberPagination):
+logger = logging.getLogger(__name__)
+
+class ListPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 1000
+    page_size_query_param = 'per_page'
+    max_page_size = 100
+
+    def paginate_queryset(self, queryset, request, view=None):
+        try:
+            return super().paginate_queryset(queryset, request, view)
+        except Exception as e:
+            logger.error(f"Pagination error: {str(e)}")
+            raise ValidationError(f"Invalid pagination parameters: {str(e)}")
+
+    def get_paginated_response(self, data):
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
 
 class QuestionListView(APIView):
-    pagination_class = StandardResultsSetPagination
+    pagination_class = ListPagination
 
     def get(self, request):
-        paginator = self.pagination_class()
-        
-        page = int(request.GET.get('page', 1))
-        per_page = int(request.GET.get('per_page', 10))
-        category = request.GET.get('category')
-        difficulty = request.GET.get('difficulty')
-        
-        questions, total = get_questions_list(page=page, per_page=per_page, category=category, difficulty=difficulty)
-        
-        paginated_result = paginator.paginate_queryset(questions, request)
-        
-        # Fetch solutions for each question
-        for question in paginated_result:
-            question.solution = get_solution(question.id)
+        try:
+            paginator = self.pagination_class()
+            
+            category = request.GET.get('category')
+            difficulty = request.GET.get('difficulty')
+            
+            questions, total = get_questions_list(category=category, difficulty=difficulty)
+            
+            paginated_questions = paginator.paginate_queryset(questions, request)
+            
+            # Fetch solutions for each question
+            for question in paginated_questions:
+                solution = get_solution(question.id)
+                if solution:
+                    question.solution = asdict(solution)
+                else:
+                    question.solution = None
 
-        return Response({
-            'questions': [dataclasses.asdict(q) for q in paginated_result],
-            'total': total,
-            'page': page,
-            'per_page': per_page
-        })
+            return paginator.get_paginated_response([asdict(q) for q in paginated_questions])
+        except ValidationError as e:
+            logger.warning(f"Validation error in QuestionListView: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Unexpected error in QuestionListView: {str(e)}")
+            return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class QuestionDetailView(APIView):
     def get(self, request, question_id):
-        question = get_question(question_id)
-        if question:
-            # Fetch the corresponding solution
-            question.solution = get_solution(question_id)
-            return Response(dataclasses.asdict(question))
-        return Response({'error': 'Question not found'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            question = get_question(question_id)
+            if question:
+                solution = get_solution(question_id)
+                if solution:
+                    question.solution = asdict(solution)
+                else:
+                    question.solution = None
+                return Response(asdict(question))
+            logger.info(f"Question not found: {question_id}")
+            return Response({'error': 'Question not found'}, status=status.HTTP_404_NOT_FOUND)
+        except ValidationError as e:
+            logger.warning(f"Validation error in QuestionDetailView: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Unexpected error in QuestionDetailView: {str(e)}")
+            return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class SolutionView(APIView):
     def get(self, request, question_id):
-        solution = get_solution(question_id)
-        if solution:
-            return Response(dataclasses.asdict(solution))
-        return Response({'error': 'Solution not found'}, status=status.HTTP_404_NOT_FOUND)
-
+        try:
+            solution = get_solution(question_id)
+            if solution:
+                return Response(asdict(solution))
+            logger.info(f"Solution not found for question: {question_id}")
+            return Response({'error': 'Solution not found'}, status=status.HTTP_404_NOT_FOUND)
+        except ValidationError as e:
+            logger.warning(f"Validation error in SolutionView: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Unexpected error in SolutionView: {str(e)}")
+            return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 class CategoryView(APIView):
-    pagination_class = StandardResultsSetPagination
+    pagination_class = ListPagination
 
     def get(self, request):
-        paginator = self.pagination_class()
-        categories = get_categories()
-        total = len(categories)
-        page = int(request.GET.get('page', 1))
-        per_page = int(request.GET.get('per_page', 10))
+        try:
+            paginator = self.pagination_class()
+            categories = get_categories()
+            
+            paginated_categories = paginator.paginate_queryset(categories, request)
 
-        start = (page - 1) * per_page
-        end = start + per_page
-        paginated_categories = categories[start:end]
-
-        mind_map_data = get_mind_map_data()
-
-        return Response({
-            'categories': [dataclasses.asdict(c) for c in paginated_categories],
-            'total': total,
-            'page': page,
-            'per_page': per_page,
-            'mind_map': mind_map_data
-        })
+            return paginator.get_paginated_response({
+                'categories': [asdict(c) for c in paginated_categories],
+            })
+        except ValidationError as e:
+            logger.warning(f"Validation error in CategoryView: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Unexpected error in CategoryView: {str(e)}")
+            return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -1,47 +1,154 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuestionData } from "../../hooks/useQuestionData";
+import { useQuestionData, useCategories } from "../../hooks/useQuestionData";
 import Pagination from "../../components/Pagination";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
-import QuestionCard from "./QuestionCard"; // New component for individual question cards
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Chip,
+  Grid,
+  Button,
+  Box,
+} from "@mui/material";
 
 const CategoryQuestionList = ({ category }) => {
   const {
     questions,
-    loading,
-    error,
-    totalQuestions,
+    loading: questionsLoading,
+    error: questionsError,
     page,
     setPage,
     perPage,
-    setPerPage,
     setCategory,
-    setDifficulty,
-  } = useQuestionData(1, 10);
+    hasMore,
+    loadMore,
+  } = useQuestionData();
+
+  const {
+    categories,
+    loading: categoriesLoading,
+    error: categoriesError,
+  } = useCategories();
+
+  const [categoryExists, setCategoryExists] = useState(false);
+
+  const normalizeCategory = (cat) => cat.replace(/-/g, " ").toLowerCase();
 
   useEffect(() => {
-    setCategory(category);
+    if (category) {
+      setCategory(category);
+    }
   }, [category, setCategory]);
 
-  if (loading) return <LoadingSpinner />;
-  if (error) return <div>Error: {error}</div>;
+  useEffect(() => {
+    if (!categoriesLoading && categories.length > 0) {
+      console.log(
+        "Categories:",
+        categories.map((cat) => cat.name)
+      );
+      const normalizedCategories = categories.map((cat) =>
+        normalizeCategory(cat.name)
+      );
+      console.log("Normalized categories:", normalizedCategories);
+      const exists = normalizedCategories.includes(normalizeCategory(category));
+      setCategoryExists(exists);
+    }
+  }, [categoriesLoading, categories, category]);
+
+  const filteredQuestions = useMemo(
+    () =>
+      questions.filter(
+        (question) =>
+          question &&
+          typeof question.category === "string" &&
+          normalizeCategory(question.category) === normalizeCategory(category)
+      ),
+    [questions, category]
+  );
+
+  const paginatedQuestions = useMemo(() => {
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    return filteredQuestions.slice(start, end);
+  }, [filteredQuestions, page, perPage]);
+
+  const totalPages = useMemo(
+    () => Math.ceil(filteredQuestions.length / perPage),
+    [filteredQuestions, perPage]
+  );
+
+  if (categoriesLoading || questionsLoading) return <LoadingSpinner />;
+  if (!categoryExists)
+    return <Typography variant="h6">Category not found</Typography>;
+  if (questionsError || categoriesError)
+    return (
+      <Typography color="error">
+        Error: {questionsError || categoriesError}
+      </Typography>
+    );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-xl font-bold mb-6">{category} Questions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {questions.map((question) => (
-          <QuestionCard key={question.id} question={question} />
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        {category
+          ? `${category.replace(/-/g, " ")} Questions (${
+              filteredQuestions.length
+            })`
+          : "All Questions"}
+      </Typography>
+      <Grid container spacing={3}>
+        {paginatedQuestions.map((question) => (
+          <Grid item xs={12} sm={6} lg={4} key={question.id}>
+            <Card elevation={3}>
+              <CardHeader
+                title={question.title}
+                titleTypographyProps={{ variant: "h6" }}
+              />
+              <CardContent>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
+                  Difficulty:{" "}
+                  <Chip
+                    label={question.difficulty}
+                    color={
+                      question.difficulty === "Hard"
+                        ? "error"
+                        : question.difficulty === "Medium"
+                        ? "warning"
+                        : "success"
+                    }
+                    size="small"
+                  />
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  {question.scenario.slice(0, 100)}...
+                </Typography>
+                <Button
+                  component={Link}
+                  to={`/question/${question.id}`}
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                >
+                  View Details
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-      </div>
-      <div className="mt-8 flex justify-center">
-        <Pagination
-          currentPage={page}
-          totalPages={Math.ceil(totalQuestions / perPage)}
-          onPageChange={setPage}
-        />
-      </div>
-    </div>
+      </Grid>
+      {totalPages > 1 && (
+        <Box mt={4} display="flex" justifyContent="center">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={(newPage) => setPage(newPage)}
+          />
+        </Box>
+      )}
+    </Box>
   );
 };
 

@@ -2,9 +2,9 @@
     "id": 716,
     "title": "Non-Overlapping Intervals for Conference Room Scheduling",
     "difficulty": "Medium",
-    "category": "Greedy Algorithm",
+    "category": "Greedy Algorithms",
     "subcategory": "Interval Scheduling",
-    "similar question": {
+    "similar_question": {
         "platforms": [{"Leetcode": 435}, "PlatformB"],
         "companies": ["Amazon", "Microsoft", "Apple", "Google", "Bloomberg", "Oracle", "Goldman Sachs", "Uber", "Meta", "Atlassian"]
     },
