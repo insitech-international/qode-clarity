@@ -2,7 +2,7 @@
     "id": 1322,
     "title": "Longest Palindromic Substring for Improving Data Compression", 
     "difficulty": "Medium",
-    "category": "String Algorithm",
+    "category": "String Algorithms",
     "subcategory": "String Manipulation",
     "similar_question": {
         "platforms": [{"Leetcode": 5}, "PlatformB"], 

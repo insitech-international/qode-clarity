@@ -2,9 +2,9 @@
     "id": 714,
     "title": "Remove K Digits for Inventory Management",
     "difficulty": "Medium",
-    "category": "Greedy Algorithm",
+    "category": "Greedy Algorithms",
     "subcategory": "String Manipulation",
-    "similar question": {
+    "similar_question": {
         "platforms": [{"Leetcode": 402}, "PlatformB"],
         "companies": ["Amazon", "Microsoft", "Apple", "Google", "Bloomberg", "Oracle", "Goldman Sachs", "Uber", "Meta", "Atlassian"]
     },

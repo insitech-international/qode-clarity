@@ -4,7 +4,7 @@
     "difficulty": "Medium",
     "category": "Dynamic Programming",
     "subcategory": "Array",
-    "similar question": {
+    "similar_question": {
         "platforms": [{"Leetcode": 55}, "PlatformB"],
         "companies": ["Amazon", "Microsoft", "Apple", "Google", "Bloomberg", "Oracle", "Goldman Sachs", "Uber", "Meta", "Atlassian"]
     },

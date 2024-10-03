@@ -2,7 +2,7 @@
     "id": 1311,
     "title": "Group Anagrams for Inventory Management", 
     "difficulty": "Medium",
-    "category": "String Algorithm",
+    "category": "String Algorithms",
     "subcategory": "String Manipulation",
     "similar_question": {
         "platforms": [{"Leetcode": 49}, "PlatformB"], 

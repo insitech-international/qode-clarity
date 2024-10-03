@@ -2,9 +2,9 @@
     "id": 711,
     "title": "Gas Station Management for Efficient Refueling",
     "difficulty": "Medium",
-    "category": "Greedy Algorithm",
+    "category": "Greedy Algorithms",
     "subcategory": "Activity Selection",
-    "similar question": {
+    "similar_question": {
         "platforms": [{"Leetcode": 134}, "PlatformB"],
         "companies": ["Amazon", "Microsoft", "Apple", "Google", "Bloomberg", "Oracle", "Goldman Sachs", "Uber", "Meta", "Atlassian"]
     },

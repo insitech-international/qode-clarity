@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuestionData } from "../hooks/useQuestionData";
-import QuestionDetails from "../components/category/QuestionDetails"; // New component for question details
-import LoadingSpinner from "../components/common/LoadingSpinner"; // Assuming a loading spinner component
+import QuestionSolutionView from "../components/category/QuestionSolutionView";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import { Box, Typography, Button, Container, Paper } from "@mui/material";
 
 const QuestionPage = () => {
   const { id } = useParams();
@@ -15,12 +16,18 @@ const QuestionPage = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const questionData = await fetchQuestionDetails(id);
-        const solutionData = await fetchSolution(id);
+        setLoading(true);
+        const [questionData, solutionData] = await Promise.all([
+          fetchQuestionDetails(id),
+          fetchSolution(id),
+        ]);
         setQuestion(questionData);
         setSolution(solutionData);
       } catch (err) {
-        setError("Failed to load question or solution");
+        console.error("Error loading question or solution:", err);
+        setError(
+          "Failed to load question or solution. Please try again later."
+        );
       } finally {
         setLoading(false);
       }
@@ -30,47 +37,36 @@ const QuestionPage = () => {
   }, [id, fetchQuestionDetails, fetchSolution]);
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <div>Error: {error}</div>;
+
+  if (error || !question || !solution) {
+    return (
+      <Container maxWidth="md">
+        <Paper elevation={3} sx={{ mt: 4, p: 3, textAlign: "center" }}>
+          <Typography variant="h6" color="error" gutterBottom>
+            {error || "Question or solution not found."}
+          </Typography>
+          <Button component={Link} to="/" variant="contained" color="primary">
+            Back to Home
+          </Button>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">{question.title}</h1>
-      <QuestionDetails question={question} />
-
-      {/* Collapsible section for the solution */}
-      <CollapsibleHeader title="View Solution">
-        <div className="mt-2">
-          <p>{solution?.content || "Solution not available."}</p>
-        </div>
-      </CollapsibleHeader>
-
-      <div className="mt-8 flex justify-center">
-        <Link
-          to="/"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Back to Home
-        </Link>
-      </div>
-    </div>
-  );
-};
-
-// Collapsible Header Component
-const CollapsibleHeader = ({ title, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="border rounded-md p-4 mb-4 bg-white">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex justify-between w-full text-left text-blue-600 hover:underline focus:outline-none"
-      >
-        <span>{title}</span>
-        <span>{isOpen ? "-" : "+"}</span>
-      </button>
-      {isOpen && <div className="mt-2">{children}</div>}
-    </div>
+    <Container maxWidth="lg">
+      <Box my={4}>
+        <Typography variant="h4" gutterBottom>
+          {question.title}
+        </Typography>
+        <QuestionSolutionView question={question} solution={solution} />
+        <Box mt={4} display="flex" justifyContent="center">
+          <Button component={Link} to="/" variant="contained" color="primary">
+            Back to Home
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
