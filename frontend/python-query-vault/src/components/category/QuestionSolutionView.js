@@ -63,7 +63,18 @@ const QuestionCard = ({ question }) => (
           }
         />
       </Box>
-      <Section title="Scenario" content={question.scenario} />
+      <Section
+        title="Category"
+        content={`${question.category} - ${question.subcategory}`}
+      />
+      <Section title="Similar Questions">
+        <Typography variant="body2">
+          LeetCode: {question.similar_questions.LeetCode}
+        </Typography>
+        <Typography variant="body2">
+          HackerRank: {question.similar_questions.HackerRank}
+        </Typography>
+      </Section>
       <AccordionSection title="Real-life Domains">
         <Box display="flex" gap={1} flexWrap="wrap">
           {question.real_life_domains.map((domain, index) => (
@@ -71,7 +82,22 @@ const QuestionCard = ({ question }) => (
           ))}
         </Box>
       </AccordionSection>
-      <AccordionSection title="Task" content={question.task} />
+      <AccordionSection title="Problem Versions">
+        {question.problem_versions.map((version, index) => (
+          <Box key={index} mb={2}>
+            <Typography variant="subtitle1">{version.version_type}</Typography>
+            <Typography variant="body2">{version.description}</Typography>
+            {version.examples.map((example, exIndex) => (
+              <Box key={exIndex} mt={1}>
+                <Typography variant="body2">Input: {example.input}</Typography>
+                <Typography variant="body2">
+                  Output: {example.output}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        ))}
+      </AccordionSection>
       <AccordionSection title="Constraints">
         <ul>
           {question.constraints.map((constraint, index) => (
@@ -81,55 +107,45 @@ const QuestionCard = ({ question }) => (
           ))}
         </ul>
       </AccordionSection>
-      <AccordionSection title="Examples">
-        {question.examples.map((example, index) => (
-          <Example key={index} example={example} index={index} />
-        ))}
-      </AccordionSection>
     </CardContent>
   </Card>
 );
 
 const SolutionSection = ({ solution, tabValue, handleTabChange }) => {
   const tabDescriptions = {
-    Classification:
-      "This section explains why this problem is classified as [category/subcategory] and what impact this classification has on our approach",
-    Relevance:
-      "This section elaborates on why this problem is important in the specified domain and why understanding its complexity is crucial for effective solutions.",
-    Approach:
-      "This section discusses why we choose the given approach for this problem and how this choice influences our implementation strategy.",
-    Constraint:
-      "This section explains how the given constraints affect our solution approach and how these constraints shape our strategy for managing edge cases.",
-    Code: "This section outlines the code implementation steps, considering the problem's complexity and chosen approach",
+    "Problem Overview":
+      "This section introduces the 'Count of Smaller Numbers After Self' problem, explaining its computational challenges and significance in algorithm design and data structures.",
+    "Algorithm Classification":
+      "This section justifies the categorization of this problem under 'Advanced Data Structure' and 'Segment Tree and BIT Manipulation', discussing how this classification influences our solution approach.",
+    "Python Solution":
+      "This section presents a detailed Python implementation of the Segment Tree approach, with explanations of key functions and their roles in solving the problem.",
+    "Mathematical Representation":
+      "This section formalizes the problem and solution using mathematical notation, providing a rigorous foundation for understanding the algorithm's logic.",
+    "Real-World Applications":
+      "This section connects the abstract problem to concrete scenarios in education, finance, and social settings, demonstrating how the algorithm can solve practical challenges.",
+    "Analogue Comparison":
+      "This section contrasts various methods for solving the problem, including brute force, mathematical, real-life scenario, analogous system, and flowchart approaches, highlighting their strengths and limitations.",
+    "Visual Representation":
+      "This section offers a graphical depiction of the Segment Tree data structure, illustrating how it efficiently manages data for our specific problem.",
   };
 
   const formatContent = (content) => {
-    return content.split("\n").map((line, index) => (
-      <Typography key={index} variant="body1" paragraph>
-        {line.trim()}
-      </Typography>
-    ));
-  };
-
-  const formatApproach = (approach) => {
-    const sections = approach.split("\n\n");
-    return (
-      <>
-        {sections.map((section, index) => {
-          if (section.includes(":")) {
-            const [title, content] = section.split(":");
-            return (
-              <Box key={index} mb={2}>
-                <Typography variant="h6">{title.trim()}</Typography>
-                {formatContent(content)}
-              </Box>
-            );
-          }
-          return formatContent(section);
-        })}
-      </>
+    return content ? (
+      content.split("\n").map((line, index) => (
+        <Typography key={index} variant="body1" paragraph>
+          {line.trim()}
+        </Typography>
+      ))
+    ) : (
+      <Typography variant="body1">Content not available</Typography>
     );
   };
+
+  if (!solution) {
+    return (
+      <Typography variant="body1">Solution data is not available.</Typography>
+    );
+  }
 
   return (
     <Card elevation={3}>
@@ -142,31 +158,45 @@ const SolutionSection = ({ solution, tabValue, handleTabChange }) => {
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
+          sx={{ mb: 2 }}
         >
           {Object.keys(tabDescriptions).map((tab, index) => (
             <Tooltip key={index} title={tabDescriptions[tab]} arrow>
               <Tab
                 label={tab}
                 sx={{
-                  maxWidth: 150,
+                  maxWidth: "None",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
+                  maxWidth: "none", // Remove max width constraint
+                  padding: "6px 16px", // Add some padding
+                  margin: "0 4px", // Add margin between tabs
+                  border: "1px solid rgba(0, 0, 0, 0.12)", // Add a light border
+                  borderRadius: "4px", // Round the corners
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.04)", // Add hover effect
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)", // Highlight selected tab
+                  },
                 }}
               />
             </Tooltip>
           ))}
         </Tabs>
         <Box mt={2}>
-          {tabValue === 0 && formatContent(solution.problem_classification)}
-          {tabValue === 1 && formatContent(solution.real_world_relevance)}
-          {tabValue === 2 && formatApproach(solution.approach_selection)}
-          {tabValue === 3 && formatApproach(solution.constraint_influence)}
-          {tabValue === 4 && (
+          {tabValue === 0 && formatContent(solution.introduction)}
+          {tabValue === 1 && formatContent(solution.classification_reason)}
+          {tabValue === 2 && (
             <SyntaxHighlighter language="python" style={vscDarkPlus}>
-              {solution.code_design}
+              {solution.pythonic_implementation}
             </SyntaxHighlighter>
           )}
+          {tabValue === 3 && formatContent(solution.mathematical_abstraction)}
+          {tabValue === 4 && formatContent(solution.real_world_analogies)}
+          {tabValue === 5 && formatContent(solution.system_comparisons)}
+          {tabValue === 6 && formatContent(solution.visual_representation)}
         </Box>
       </CardContent>
     </Card>
@@ -184,7 +214,7 @@ const Section = ({ title, children, content }) => (
 );
 
 const AccordionSection = ({ title, children, content }) => (
-  <Accordion defaultExpanded={title === "Scenario"}>
+  <Accordion defaultExpanded={title === "Real-life Domains"}>
     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
       <Typography variant="h6">{title}</Typography>
     </AccordionSummary>
@@ -192,19 +222,6 @@ const AccordionSection = ({ title, children, content }) => (
       {content ? <Typography variant="body1">{content}</Typography> : children}
     </AccordionDetails>
   </Accordion>
-);
-
-const Example = ({ example, index }) => (
-  <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
-    <Typography variant="subtitle2" gutterBottom>
-      Example {index + 1}:
-    </Typography>
-    <Box bgcolor="grey.100" p={1} borderRadius={1} mb={1}>
-      <Typography variant="body2">Input: {example.input}</Typography>
-      <Typography variant="body2">Output: {example.output}</Typography>
-    </Box>
-    <Typography variant="body2">Explanation: {example.explanation}</Typography>
-  </Paper>
 );
 
 export default QuestionSolutionView;

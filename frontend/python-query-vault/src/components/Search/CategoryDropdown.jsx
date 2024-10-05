@@ -1,39 +1,12 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import { Box, TextField, Button, MenuItem } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
-const DropdownWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Select = styled.select`
-  padding: 0.5rem;
-  margin-right: 0.5rem;
-  border: none;
-  border-radius: 4px;
-`;
-
-const Input = styled.input`
-  padding: 0.5rem;
-  margin-right: 0.5rem;
-  border: none;
-  border-radius: 4px;
-`;
-
-const Button = styled.button`
-  padding: 0.5rem 1rem;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #2980b9;
-  }
-`;
-
+const StyledBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+}));
 
 const categories = [
   {
@@ -187,60 +160,84 @@ const categories = [
   },
 ];
 
-const CategoryDropdown = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubcategory, setSelectedSubcategory] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleCategoryChange = (e) => {
-    const selectedCategoryId = e.target.value;
-    setSelectedCategory(selectedCategoryId);
-    setSelectedSubcategory("");
-  };
+const CategoryDropdown = ({ onSearch }) => {
+  const [formState, setFormState] = useState({
+    selectedCategory: "",
+    selectedSubcategory: "",
+    searchTerm: "",
+  });
 
-  const handleSubcategoryChange = (e) => {
-    setSelectedSubcategory(e.target.value);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+  const handleInputChange = (field) => (e) => {
+    const value = e.target.value;
+    setFormState((prevState) => ({
+      ...prevState,
+      [field]: value,
+      ...(field === "selectedCategory" && { selectedSubcategory: "" }), // Reset subcategory when category changes
+    }));
   };
 
   const handleSearch = () => {
-    // Implement search functionality
-    console.log("Searching:", { selectedCategory, selectedSubcategory, searchTerm });
+    const { selectedCategory, selectedSubcategory, searchTerm } = formState;
+    onSearch(selectedCategory, selectedSubcategory, searchTerm);
   };
 
-  const currentCategory = categories.find((cat) => cat.id === selectedCategory);
+  const currentCategory = categories.find(
+    (category) => category.id === formState.selectedCategory
+  );
 
   return (
-    <DropdownWrapper>
-      <Select value={selectedCategory} onChange={handleCategoryChange}>
-        <option value="">Select Category</option>
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
-          </option>
+    <StyledBox>
+      <TextField
+        select
+        label="Category"
+        value={formState.selectedCategory}
+        onChange={handleInputChange("selectedCategory")}
+        variant="outlined"
+        size="small"
+      >
+        <MenuItem value="">
+          <em>Select Category</em>
+        </MenuItem>
+        {categories.map(({ id, name }) => (
+          <MenuItem key={id} value={id}>
+            {name}
+          </MenuItem>
         ))}
-      </Select>
+      </TextField>
+
       {currentCategory && (
-        <Select value={selectedSubcategory} onChange={handleSubcategoryChange}>
-          <option value="">Select Subcategory</option>
-          {currentCategory.subcategories.map((subcategory) => (
-            <option key={subcategory.id} value={subcategory.id}>
-              {subcategory.name}
-            </option>
+        <TextField
+          select
+          label="Subcategory"
+          value={formState.selectedSubcategory}
+          onChange={handleInputChange("selectedSubcategory")}
+          variant="outlined"
+          size="small"
+        >
+          <MenuItem value="">
+            <em>Select Subcategory</em>
+          </MenuItem>
+          {currentCategory.subcategories.map(({ id, name }) => (
+            <MenuItem key={id} value={id}>
+              {name}
+            </MenuItem>
           ))}
-        </Select>
+        </TextField>
       )}
-      <Input
-        type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={handleSearchChange}
+
+      <TextField
+        label="Search"
+        variant="outlined"
+        size="small"
+        value={formState.searchTerm}
+        onChange={handleInputChange("searchTerm")}
       />
-      <Button onClick={handleSearch}>Search</Button>
-    </DropdownWrapper>
+
+      <Button variant="contained" color="secondary" onClick={handleSearch}>
+        Search
+      </Button>
+    </StyledBox>
   );
 };
 

@@ -1,39 +1,18 @@
 import os
-import json
 import re
-from django.conf import settings
-import logging
+from typing import List, Dict, Optional, Tuple, Any
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any
+from django.conf import settings
 from django.core.cache import cache
+import logging
 
 logger = logging.getLogger(__name__)
 
 @dataclass
-class SimilarQuestion:
-    platforms: List[Dict[str, int]]
-    companies: List[str]
-
-@dataclass
-class Example:
-    input: str
-    output: str
-    explanation: str
-
-@dataclass
-class Category:
-    name: str
-    count: int
-    questions: List[Dict[str, Any]]
-    diagram_path: str
-
-@dataclass
-class Solution:
-    problem_classification: str
-    real_world_relevance: str
-    approach_selection: str
-    constraint_influence: str
-    code_design: str
+class ProblemVersion:
+    version_type: str
+    description: str
+    examples: List[Dict[str, str]]
 
 @dataclass
 class Question:
@@ -42,118 +21,130 @@ class Question:
     difficulty: str
     category: str
     subcategory: str
-    similar_question: Dict[str, Any]
+    similar_questions: Dict[str, Any]
     real_life_domains: List[str]
-    scenario: str
-    task: str
-    examples: List[Dict[str, str]]
+    problem_versions: List[ProblemVersion]
     constraints: List[str]
-    solution: Optional[Solution] = None
+
+@dataclass
+class Solution:
+    introduction: str
+    classification_reason: str
+    pythonic_implementation: str
+    mathematical_abstraction: str
+    real_world_analogies: str
+    system_comparisons: str
+    visual_representation: str
+
+@dataclass
+class Category:
+    name: str
+    count: int
+    questions: List[Dict[str, Any]]
+    diagram_path: str
+
+
+def parse_markdown_file(file_path: str) -> Dict[str, str]:
+    sections = {}
+    current_section = None
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+    except UnicodeDecodeError:
+        # If UTF-8 fails, try with ISO-8859-1 encoding
+        with open(file_path, 'r', encoding='iso-8859-1') as file:
+            content = file.read()
+
+    for line in content.split('\n'):
+        if line.startswith('# '):
+            current_section = line[2:].lower().replace(' ', '_')
+            sections[current_section] = ''
+        elif current_section:
+            sections[current_section] += line + '\n'
+
+    return {k: v.strip() for k, v in sections.items()}
 
 def get_question(question_id: int) -> Optional[Question]:
-    if not isinstance(question_id, int) or question_id <= 0:
-        raise ValueError("Invalid question ID")
-
     cache_key = f'question_{question_id}'
     cached_question = cache.get(cache_key)
     if cached_question:
         return cached_question
 
-    pattern = re.compile(rf'^{question_id}_.*\.json$')
     questions_dir = os.path.join(settings.BASE_DIR, 'questions', 'data')
-
     for root, dirs, files in os.walk(questions_dir):
         for file in files:
-            if pattern.match(file):
+            if file.startswith(f"{question_id}_") and file.endswith('.md'):
                 question_path = os.path.join(root, file)
                 try:
-                    with open(question_path, 'r') as f:
-                        data = json.load(f)
-                        question = Question(**data)
-                        
-                        # Fetch the solution
-                        solution = get_solution(question_id)
-                        if solution:
-                            question.solution = solution
-                        
-                        cache.set(cache_key, question, 3600)  # Cache for 1 hour
-                        return question
+                    sections = parse_markdown_file(question_path)
+                    
+                    problem_versions = []
+                    for i in range(1, 4):  # Assuming up to 3 versions
+                        version_key = f'version_{i}'
+                        if version_key in sections:
+                            version_data = sections[version_key].split('\n\n')
+                            problem_versions.append(ProblemVersion(
+                                version_type=version_data[0],
+                                description=version_data[1],
+                                examples=[{'input': ex.split('\n')[0], 'output': ex.split('\n')[1]} for ex in version_data[2:]]
+                            ))
+
+                    question = Question(
+                        id=question_id,
+                        title=sections['title'],
+                        difficulty=sections['difficulty'],
+                        category=os.path.basename(os.path.dirname(os.path.dirname(question_path))),
+                        subcategory=os.path.basename(os.path.dirname(question_path)),
+                        similar_questions=eval(sections['similar_questions']),
+                        real_life_domains=sections['real_life_domains'].split(', '),
+                        problem_versions=problem_versions,
+                        constraints=sections['constraints'].split('\n')
+                    )
+
+                    cache.set(cache_key, question, 3600)  # Cache for 1 hour
+                    return question
                 except Exception as e:
                     logger.error(f"Error loading question for ID {question_id}: {str(e)}")
-                    return None
 
     logger.warning(f"No question file found for ID: {question_id}")
     return None
 
 def get_solution(question_id: int) -> Optional[Solution]:
-    if not isinstance(question_id, int) or question_id <= 0:
-        raise ValueError("Invalid question ID")
-
     cache_key = f'solution_{question_id}'
     cached_solution = cache.get(cache_key)
     if cached_solution:
         return cached_solution
 
     solutions_dir = os.path.join(settings.BASE_DIR, 'questions', 'solutions')
-    logger.info(f"Searching for solution in directory: {solutions_dir}")
-
     for root, dirs, files in os.walk(solutions_dir):
         for file in files:
-            if file.startswith(f"{question_id}_") and file.endswith(".py"):
+            if file.startswith(f"{question_id}_") and file.endswith('.md'):
                 solution_path = os.path.join(root, file)
-                logger.info(f"Found solution file: {solution_path}")
+                print(solution_path)
                 try:
-                    with open(solution_path, 'r') as f:
-                        content = f.read()
-
-                    sections = extract_sections(content)
+                    sections = parse_markdown_file(solution_path)
                     
-                    if all(sections.values()):
-                        solution = Solution(**sections)
-                        cache.set(cache_key, solution, 3600)  # Cache for 1 hour
-                        return solution
-                    else:
-                        logger.warning(f"Some sections are empty in solution file: {solution_path}")
-                        return None
+                    solution = Solution(
+                        introduction=sections['introduction'],
+                        classification_reason=sections['classification_reason'],
+                        pythonic_implementation=sections['pythonic_implementation'],
+                        mathematical_abstraction=sections['mathematical_abstraction'],
+                        real_world_analogies=sections['real_world_analogies'],
+                        system_comparisons=sections['system_comparisons'],
+                        visual_representation=sections['visual_representation']
+                    )
+
+                    cache.set(cache_key, solution, 3600)  # Cache for 1 hour
+                    return solution
                 except Exception as e:
                     logger.error(f"Error loading solution for question ID {question_id}: {str(e)}")
-                    return None
 
     logger.warning(f"No solution file found for question ID: {question_id}")
     return None
 
-def extract_sections(content: str) -> dict:
-    sections = {
-        'problem_classification': '',
-        'real_world_relevance': '',
-        'approach_selection': '',
-        'constraint_influence': '',
-        'code_design': ''
-    }
-
-    section_patterns = {
-        'problem_classification': r'# CLASSIFICATION REASON:.*?(?=# LOGIC EXPLANATION:|$)',
-        'real_world_relevance': r'# LOGIC EXPLANATION:.*?(?=# BEST APPROACH:|$)',
-        'approach_selection': r'# BEST APPROACH:.*?(?=# CONSTRAINTS:|$)',
-        'constraint_influence': r'# CONSTRAINTS:.*?(?=# CODE DESIGN:|$)',
-        'code_design': r'# CODE DESIGN:.*'
-    }
-
-    for section, pattern in section_patterns.items():
-        print(section)
-        match = re.search(pattern, content, re.DOTALL)
-        if match:
-            section_content = match.group(0)
-            # Remove the section header and leading/trailing whitespace
-            cleaned_content = re.sub(r'^#.*?\n', '', section_content, flags=re.MULTILINE).strip()
-            sections[section] = cleaned_content
-        else:
-            logger.warning(f"Section '{section}' not found in the solution file.")
-
-    return sections
-
-def get_questions_list(category: str = None, difficulty: str = None) -> tuple:
-    cache_key = f'questions_list_{category}_{difficulty}'
+def get_questions_list(category: str = None, difficulty: str = None, company: str = None) -> Tuple[List[Question], int]:
+    cache_key = f'questions_list_{category}_{difficulty}_{company}'
     cached_result = cache.get(cache_key)
     if cached_result:
         return cached_result
@@ -163,17 +154,15 @@ def get_questions_list(category: str = None, difficulty: str = None) -> tuple:
 
     for root, dirs, files in os.walk(questions_dir):
         for file in files:
-            if file.endswith('.json'):
+            if file.endswith('.md'):
                 try:
-                    with open(os.path.join(root, file), 'r') as f:
-                        question_data = json.load(f)
-                        if question_data:  # Only process non-empty files
-                            question = Question(**question_data)
-                            if (not category or question.category == category) and \
-                               (not difficulty or question.difficulty == difficulty):
-                                all_questions.append(question)
-                except json.JSONDecodeError:
-                    logger.error(f"Error decoding JSON from file {file}")
+                    question_id = int(file.split('_')[0])
+                    question = get_question(question_id)
+                    if question:
+                        if (not category or question.category == category) and \
+                           (not difficulty or question.difficulty == difficulty) and \
+                           (not company or company.lower() in [c.lower() for c in question.similar_questions.get('companies', [])]):
+                            all_questions.append(question)
                 except Exception as e:
                     logger.error(f"Error loading question from file {file}: {str(e)}")
 
@@ -193,34 +182,30 @@ def get_categories() -> List[Category]:
 
     for root, dirs, files in os.walk(questions_dir):
         for file in files:
-            if file.endswith('.json'):
+            if file.endswith('.md'):
                 try:
-                    with open(os.path.join(root, file), 'r') as f:
-                        question_data = json.load(f)
-                        if question_data:  # Only process non-empty files
-                            question = Question(**question_data)
-                            category = question.category
-                            if category:
-                                if category not in categories:
-                                    categories[category] = Category(
-                                        name=category,
-                                        count=0,
-                                        questions=[],
-                                        diagram_path=os.path.join(diagrams_dir, f"{category.lower().replace(' ', '_')}.png")
-                                    )
-                                categories[category].count += 1
-                                
-                                # Fetch the corresponding solution
-                                solution = get_solution(question.id)
-                                question = get_question(question.id)
+                    question_id = int(file.split('_')[0])
+                    question = get_question(question_id)
+                    if question:
+                        category = question.category
+                        if category:
+                            if category not in categories:
+                                categories[category] = Category(
+                                    name=category,
+                                    count=0,
+                                    questions=[],
+                                    diagram_path=os.path.join(diagrams_dir, f"{category.lower().replace(' ', '_')}.png")
+                                )
+                            categories[category].count += 1
+                            
+                            # Fetch the corresponding solution
+                            solution = get_solution(question_id)
 
-                                # Add question and solution to the category
-                                categories[category].questions.append({
-                                    'question': question,
-                                    'solution': solution
-                                })
-                except json.JSONDecodeError:
-                    logger.error(f"Error decoding JSON from file {file}")
+                            # Add question and solution to the category
+                            categories[category].questions.append({
+                                'question': question,
+                                'solution': solution
+                            })
                 except Exception as e:
                     logger.error(f"Error loading question from file {file}: {str(e)}")
 
@@ -228,4 +213,3 @@ def get_categories() -> List[Category]:
     categories_list = sorted(list(categories.values()), key=lambda x: x.count, reverse=True)
     cache.set(cache_key, categories_list, 3600)  # Cache for 1 hour
     return categories_list
-

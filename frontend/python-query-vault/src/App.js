@@ -7,6 +7,7 @@ import Footer from "./components/common/Footer";
 import HomePage from "./pages/HomePage";
 import QuestionPage from "./pages/QuestionPage";
 import CategoryPage from "./pages/CategoryPage";
+import SearchPage from "./pages/SearchPage"; // Add this import
 import AboutPage from "./pages/AboutPage.js";
 import ContactPage from "./pages/ContactPage.js";
 import TermsPage from "./pages/TermsPage.js";
@@ -22,6 +23,8 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
           <Route path="/question/:id" element={<QuestionPage />} />
+          <Route path="/search" element={<SearchPage />} />{" "}
+          {/* Add this new route */}
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />
