@@ -24,34 +24,24 @@ def get_solution(question_id: int) -> Solution:
 
         # LOGIC EXPLANATION:
         real_world_relevance="""
-        Anagrams are words or phrases formed by rearranging the letters of another word or phrase.
-        For example, "bat" and "tab" are anagrams, as are "god" and "dog".
-        The goal is to group all anagrams together from a given list of strings.
+Financial Analysis and Portfolio Management:
+In portfolio management, counting smaller values to the right of self could be used to identify clusters of low-performing stocks within a portfolio.
+For example, if we have a list of stock prices over time, we might want to count how many days had lower closing prices than today's price, to gauge overall market performance.
 
-        Key Points:
-        1. Two words are anagrams if they have the same characters with the same frequencies.
-        2. The order of characters doesn't matter for anagrams.
-        3. The task is to find all such groups and return them as lists.
-        
-        
-        Anagram grouping is important in natural language processing because:
-        1. It aids in spell checking and word suggestion algorithms.
-        2. It's useful in text analysis for identifying related phrases.
-        3. It helps in cryptography for potential plaintext identification.
-        
-        Understanding its complexity (O(n*m)) is crucial for optimizing performance,
-        especially when dealing with large datasets of strings.
-        
-        Time Complexity: O(n * m)
-        - n: Number of strings
-        - m: Average length of strings
-        
-        Space Complexity: O(n * m)
-        - Worst case: All strings stored in the dictionary
-        
-        This complexity is optimal because we must examine every character once.
-        The space trade-off allows for efficient grouping without sorting.
-        """,
+Healthcare and Biomedical Research:
+In genomic analysis, this concept could be applied to studying gene expression levels along a chromosome.
+Researchers might count how many base pairs downstream of a particular gene have lower expression levels, to identify regulatory elements.
+
+Environmental Monitoring and Climate Science:
+In climate data analysis, this could be used to study temperature trends over time.
+Scientists might count how many consecutive years had lower average temperatures than the current year, to identify cooling trends.
+These examples illustrate how counting smaller values to the right of self can be applied to various real-world scenarios:
+
+Identifying patterns or trends in sequential data
+Analyzing temporal changes in measurements
+Spotting anomalies or significant deviations from recent norms
+The core idea remains the same: we're looking at how many subsequent items in a sequence meet a certain condition (being smaller than the current item). This approach can be valuable in domains dealing with time-series data, sequential analysis, or identifying patterns in evolving systems.
+""",
 
         # BEST APPROACH:
         approach_selection="""

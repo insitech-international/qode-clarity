@@ -43,8 +43,9 @@ class QuestionListView(APIView):
             
             category = request.GET.get('category')
             difficulty = request.GET.get('difficulty')
+            company = request.GET.get('company')
             
-            questions, total = get_questions_list(category=category, difficulty=difficulty)
+            questions, total = get_questions_list(category=category, difficulty=difficulty, company=company)
             
             paginated_questions = paginator.paginate_queryset(questions, request)
             
@@ -63,7 +64,6 @@ class QuestionListView(APIView):
         except Exception as e:
             logger.error(f"Unexpected error in QuestionListView: {str(e)}")
             return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 class QuestionDetailView(APIView):
     def get(self, request, question_id):
         try:

@@ -20,8 +20,8 @@ const FeaturedQuestions = ({ questions = [] }) => {
         Featured Questions
       </Typography>
       <Grid container spacing={3}>
-        {questions.slice(0, 9).map((question) => (
-          <Grid item xs={12} sm={6} lg={4} key={question.id}>
+        {questions.map((question) => (
+          <Grid item xs={12} sm={6} md={4} key={question.id}>
             <Card variant="outlined" sx={{ height: '100%', transition: '0.3s', '&:hover': { boxShadow: 6 } }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -34,11 +34,11 @@ const FeaturedQuestions = ({ questions = [] }) => {
                   sx={{ marginBottom: '1rem' }}
                 />
                 <Typography variant="body2" paragraph>
-                  {question.scenario.slice(0, 100)}...
+                  {question.problem_versions[0].description.slice(0, 100)}...
                 </Typography>
                 <div>
                   {question.real_life_domains.slice(0, 3).map((domain, index) => (
-                    <Chip key={index} label={domain} variant="outlined" size="small" sx={{ marginRight: '0.5rem' }} />
+                    <Chip key={index} label={domain} variant="outlined" size="small" sx={{ marginRight: '0.5rem', marginBottom: '0.5rem' }} />
                   ))}
                 </div>
                 <Link to={`/question/${question.id}`} style={{ textDecoration: 'none', color: '#1976d2', marginTop: '1rem', display: 'inline-block' }}>

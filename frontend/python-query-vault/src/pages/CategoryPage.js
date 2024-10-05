@@ -1,30 +1,46 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import QuestionList from "../components/category/CategoryQuestionList";
+import CategoryQuestionList from "../components/category/CategoryQuestionList";
 import { useQuestionData } from "../hooks/useQuestionData";
-import {
-  Typography,
-  Container,
-  CircularProgress,
-  Box,
-  Pagination,
-} from "@mui/material";
+import { Typography, Container, CircularProgress, Box } from "@mui/material";
 
 const CategoryPage = () => {
-  const { categoryName } = useParams(); // Capture category name from URL
-  const { questions, loading, error, setPage, page } = useQuestionData(); // Fetch questions using the hook
+  const { categoryName } = useParams();
+  const [page, setPage] = useState(1);
+  const { fetchQuestions } = useQuestionData();
+  const [questions, setQuestions] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const loadQuestions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetchQuestions({ category: categoryName, page });
+      setQuestions(response.results || []);
+      setTotalCount(response.count || 0);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      setQuestions([]);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [categoryName, page, fetchQuestions]);
 
   useEffect(() => {
-    setPage(1); // Reset to the first page when the category changes
-  }, [categoryName, setPage]);
-
-  const handlePageChange = (event, value) => {
-    setPage(value); // Change the page when the user interacts with pagination
-  };
+    loadQuestions();
+  }, [loadQuestions]);
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -36,21 +52,14 @@ const CategoryPage = () => {
 
   return (
     <Container>
-      <Typography variant="h3" gutterBottom>
-        {categoryName.replace(/-/g, " ")} {/* Display category name nicely */}
-      </Typography>
-      <QuestionList questions={questions} category={categoryName} />{" "}
-      {/* Pass categoryName as a prop */}
-      {questions.length > 10 && (
-        <Box mt={4} display="flex" justifyContent="center">
-          <Pagination
-            count={Math.ceil(questions.length / 10)} // Pagination logic
-            page={page}
-            onChange={handlePageChange}
-            color="primary"
-          />
-        </Box>
-      )}
+      <CategoryQuestionList
+        questions={questions}
+        category={categoryName}
+        page={page}
+        setPage={setPage}
+        perPage={10}
+        totalCount={totalCount}
+      />
     </Container>
   );
 };

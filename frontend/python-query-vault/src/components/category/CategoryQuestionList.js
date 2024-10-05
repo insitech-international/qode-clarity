@@ -1,8 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useQuestionData, useCategories } from "../../hooks/useQuestionData";
 import Pagination from "../../components/Pagination";
-import LoadingSpinner from "../../components/common/LoadingSpinner";
 import {
   Card,
   CardContent,
@@ -14,90 +12,26 @@ import {
   Box,
 } from "@mui/material";
 
-const CategoryQuestionList = ({ category }) => {
-  const {
-    questions,
-    loading: questionsLoading,
-    error: questionsError,
-    page,
-    setPage,
-    perPage,
-    setCategory,
-    hasMore,
-    loadMore,
-  } = useQuestionData();
+const CategoryQuestionList = ({
+  questions,
+  category,
+  page,
+  setPage,
+  perPage = 10,
+  totalCount,
+}) => {
+  const normalizeCategory = (cat) => cat.replace(/_/g, " ").toLowerCase();
 
-  const {
-    categories,
-    loading: categoriesLoading,
-    error: categoriesError,
-  } = useCategories();
+  const paginatedQuestions = useMemo(() => questions, [questions]);
 
-  const [categoryExists, setCategoryExists] = useState(false);
-
-  const normalizeCategory = (cat) => cat.replace(/-/g, " ").toLowerCase();
-
-  useEffect(() => {
-    if (category) {
-      setCategory(category);
-    }
-  }, [category, setCategory]);
-
-  useEffect(() => {
-    if (!categoriesLoading && categories.length > 0) {
-      console.log(
-        "Categories:",
-        categories.map((cat) => cat.name)
-      );
-      const normalizedCategories = categories.map((cat) =>
-        normalizeCategory(cat.name)
-      );
-      console.log("Normalized categories:", normalizedCategories);
-      const exists = normalizedCategories.includes(normalizeCategory(category));
-      setCategoryExists(exists);
-    }
-  }, [categoriesLoading, categories, category]);
-
-  const filteredQuestions = useMemo(
-    () =>
-      questions.filter(
-        (question) =>
-          question &&
-          typeof question.category === "string" &&
-          normalizeCategory(question.category) === normalizeCategory(category)
-      ),
-    [questions, category]
-  );
-
-  const paginatedQuestions = useMemo(() => {
-    const start = (page - 1) * perPage;
-    const end = start + perPage;
-    return filteredQuestions.slice(start, end);
-  }, [filteredQuestions, page, perPage]);
-
-  const totalPages = useMemo(
-    () => Math.ceil(filteredQuestions.length / perPage),
-    [filteredQuestions, perPage]
-  );
-
-  if (categoriesLoading || questionsLoading) return <LoadingSpinner />;
-  if (!categoryExists)
-    return <Typography variant="h6">Category not found</Typography>;
-  if (questionsError || categoriesError)
-    return (
-      <Typography color="error">
-        Error: {questionsError || categoriesError}
-      </Typography>
-    );
+  const totalPages = Math.ceil(totalCount / perPage);
 
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         {category
-          ? `${category.replace(/-/g, " ")} Questions (${
-              filteredQuestions.length
-            })`
-          : "All Questions"}
+          ? `${category.replace(/_/g, " ")} Questions (${totalCount})`
+          : `All Questions (${totalCount})`}
       </Typography>
       <Grid container spacing={3}>
         {paginatedQuestions.map((question) => (
@@ -123,8 +57,20 @@ const CategoryQuestionList = ({ category }) => {
                   />
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  {question.scenario.slice(0, 100)}...
+                  {question.problem_versions[0].description.slice(0, 100)}...
                 </Typography>
+                <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
+                  {question.real_life_domains
+                    .slice(0, 3)
+                    .map((domain, index) => (
+                      <Chip
+                        key={index}
+                        label={domain}
+                        variant="outlined"
+                        size="small"
+                      />
+                    ))}
+                </Box>
                 <Button
                   component={Link}
                   to={`/question/${question.id}`}

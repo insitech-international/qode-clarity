@@ -1,4 +1,3 @@
-// AboutUs.js
 import React from "react";
 import styled from "styled-components";
 import Card from "../components/common/Card"; // Adjust the import path as necessary
@@ -23,28 +22,39 @@ const AboutPage = () => {
   return (
     <AboutContainer>
       <Card>
-        <Title>About Us</Title>
+        <Title>
+          Python Query Vault: Mastering Algorithmic Problem-Solving with Python
+        </Title>
+        <h3>Code to the Top with Python: The 5 Why Approach</h3>
         <Paragraph>
-          InsiTech International is a leading technology firm dedicated to
-          providing innovative solutions that enhance the way businesses
-          operate. Our mission is to empower organizations through the
-          integration of cutting-edge technologies and strategic insights.
+          Welcome to Python Query Vault, your gateway to mastering algorithmic
+          problem-solving through coding challenges and real-world
+          problem-solving techniques.
         </Paragraph>
         <Paragraph>
-          One of our prominent projects, Python Query Vault, aims to simplify
-          data management and enhance security protocols. We strive to create
-          user-friendly tools that cater to the diverse needs of our clients.
+          Our platform is designed to help aspiring software engineers develop
+          expertise in solving complex algorithmic queries using the 5 Why
+          method.
         </Paragraph>
         <Paragraph>
-          Our team comprises experts from various fields, working
-          collaboratively to drive progress and deliver exceptional results. We
-          believe in a customer-centric approach, ensuring that our solutions
-          are tailored to meet the unique requirements of each client.
+          We employ the powerful 5 Why approach to delve deep into
+          classification, relevance, approach, constraints, and code - essential
+          skills required to tackle intricate coding challenges.
         </Paragraph>
         <Paragraph>
-          At InsiTech, we value integrity, innovation, and excellence, and we
-          are committed to maintaining the highest standards in everything we
-          do. Join us on our journey to transform the future of technology.
+          Through our comprehensive collection of coding exercises and
+          solutions, users can develop analytical thinking and problem-solving
+          skills crucial for tackling complex algorithmic problems.
+        </Paragraph>
+        <Paragraph>
+          Our mission is to empower future technologists with the coding skills
+          and analytical thinking required to solve real-world algorithmic
+          challenges.
+        </Paragraph>
+        <Paragraph>
+          Join us in revolutionizing the way developers approach and solve
+          complex algorithmic problems, shaping the future of coding innovations
+          together.
         </Paragraph>
       </Card>
     </AboutContainer>

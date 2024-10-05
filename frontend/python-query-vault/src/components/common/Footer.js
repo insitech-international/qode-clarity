@@ -5,7 +5,7 @@ import styled from "styled-components";
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure the container takes at least full viewport height */
+  min-height: 70vh; /* Ensure the container takes at least full viewport height */
 `;
 
 const StyledFooter = styled.footer`
