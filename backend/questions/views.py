@@ -47,6 +47,9 @@ class QuestionListView(APIView):
             
             questions, total = get_questions_list(category=category, difficulty=difficulty, company=company)
             
+            if not questions:
+                return Response({'message': 'No questions found'}, status=status.HTTP_404_NOT_FOUND)
+
             paginated_questions = paginator.paginate_queryset(questions, request)
             
             # Fetch solutions for each question
@@ -64,6 +67,7 @@ class QuestionListView(APIView):
         except Exception as e:
             logger.error(f"Unexpected error in QuestionListView: {str(e)}")
             return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class QuestionDetailView(APIView):
     def get(self, request, question_id):
         try:

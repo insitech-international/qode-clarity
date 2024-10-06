@@ -9,9 +9,6 @@ const CarouselWrapper = styled.div`
   max-width: 80vw;
   margin: 0 auto;
 
-  .carousel .control-dots {
-  }
-
   .carousel .control-dots .dot {
     box-shadow: none;
     background: #2c3e50;
@@ -28,7 +25,6 @@ const CategoryCard = styled.div`
   flex-direction: ${(props) => (props.reverse ? "row-reverse" : "row")};
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0);
   padding: 2rem;
   height: 400px;
   align-items: center;
@@ -165,11 +161,11 @@ const CategoryCarousel = () => {
       "Backtracking & Recursion":
         "Problem-solving approaches that involve trying different possibilities and using a function that calls itself to solve smaller versions of the same problem.",
       "Greedy Algorithms":
-        "Strategies that make the best immediate choice at each step, hoping to find a good overall solution, like always picking the shortest line at a grocery store.",
+        "*How it works: Makes the best choice at each step (locally optimal). *Best for: Problems that can be broken down into smaller, solvable parts (clear substructures). *Used in: GPS navigation, scheduling meetings, and file compression.",
       "Advanced Data Structures":
         "Specialized ways to store and organize data for efficient access and modification, like a family tree or a city map.",
       "Tree & Graph Algorithms":
-        "Methods for working with interconnected data, such as finding the shortest route between two cities or organizing hierarchical information.",
+        "Efficient techniques for solving problems in hierarchical or interconnected systems, like family trees or network routing.",
       "Heap & Priority Queue":
         "Special data structures that always keep the most important item readily available, like a to-do list that automatically sorts tasks by urgency.",
       "Linked List Techniques":
