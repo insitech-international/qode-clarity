@@ -161,26 +161,27 @@ def get_question(question_id: int) -> Optional[Question]:
         metadata = sections.get('metadata', {})
         problem_versions = parse_problem_versions(sections.get('versions', ''))
         
-        similar_questions = metadata.get('Similar Questions', {})
-
         question = Question(
             id=question_id,
             title=metadata.get('Title', ''),
             difficulty=metadata.get('Difficulty', ''),
             category=metadata.get('Category', ''),
             subcategory=metadata.get('Subcategory', ''),
-            similar_questions=similar_questions,
+            similar_questions=metadata.get('Similar Questions', '').split(', ') if metadata.get('Similar Questions') else [],
             real_life_domains=metadata.get('Real Life Domains', '').split(', ') if metadata.get('Real Life Domains') else [],
             problem_versions=problem_versions,
             constraints=sections.get('constraints', '').split('\n') if sections.get('constraints') else [],
             notes=sections.get('notes', '').split('\n') if sections.get('notes') else []
         )
+        print(metadata)
 
         cache.set(cache_key, question, 3600)  # Cache for 1 hour
         return question
     except Exception as e:
         logger.error(f"Error loading question for ID {question_id}: {str(e)}", exc_info=True)
         return None
+
+        
 
 def get_solution(question_id: int) -> Optional[Solution]:
     cache_key = f'solution_{question_id}'
