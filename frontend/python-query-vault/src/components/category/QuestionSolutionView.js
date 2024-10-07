@@ -77,7 +77,7 @@ const QuestionCard = ({ question }) => (
             {question.title}
           </Typography>
           <Typography variant="body2" align="center" color="text.secondary">
-            {question.category} - {question.subcategory}
+            Category: {question.category} - Subcategory: {question.subcategory}
           </Typography>
         </Box>
 
@@ -157,7 +157,7 @@ const SolutionCard = ({ solution, tabValue, handleTabChange }) => {
         "This section justifies the categorization of this problem, discussing how this classification influences our solution approach.",
     },
     {
-      label: "Implementation",
+      label: "Pythonic Implementation",
       content: solution.pythonic_implementation,
       isCode: true,
       description:
@@ -176,10 +176,10 @@ const SolutionCard = ({ solution, tabValue, handleTabChange }) => {
         "This section connects the abstract problem to concrete scenarios, demonstrating how the algorithm can solve practical challenges.",
     },
     {
-      label: "Comparisons",
-      content: solution.system_comparisons,
+      label: "Storytelling Approach",
+      content: solution.storytelling_approach,
       description:
-        "This section contrasts various methods for solving the problem, highlighting their strengths and limitations.",
+        "This section x-rays the problem and tells the solution as a story to a 6 year old.",
     },
     {
       label: "Visual",

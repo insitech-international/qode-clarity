@@ -47,7 +47,7 @@ const Header = () => {
   return (
     <HeaderWrapper>
       <HeaderContainer>
-        <Brand>Python Query Vault</Brand>
+        <Brand>Code Clarity</Brand>
         <Nav>
           <ul>
             <li><Link to="/">Home</Link></li>
