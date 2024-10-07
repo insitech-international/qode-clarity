@@ -91,6 +91,41 @@ export const useQuestionData = () => {
     return await fetchData(`/solutions/${questionId}/`);
   }, []);
 
+  const fetchFeaturedQuestions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchData("/featured-questions/");
+      const categorizedQuestions = {};
+
+      // Check if data is an array
+      if (Array.isArray(data)) {
+        data.forEach((question) => {
+          if (!categorizedQuestions[question.category]) {
+            categorizedQuestions[question.category] = [];
+          }
+          if (categorizedQuestions[question.category].length < 6) {
+            categorizedQuestions[question.category].push(question);
+          }
+        });
+      } else {
+        // If data is not an array, it might be an object with categories as keys
+        Object.entries(data).forEach(([category, questions]) => {
+          categorizedQuestions[category] = questions.slice(0, 6);
+        });
+      }
+
+      return categorizedQuestions;
+    } catch (err) {
+      console.error("Error fetching featured questions:", err);
+      setError("Failed to fetch featured questions. Please try again later.");
+      return {};
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     questions,
     loading,
@@ -98,5 +133,6 @@ export const useQuestionData = () => {
     fetchQuestions,
     fetchQuestionDetails,
     fetchSolution,
+    fetchFeaturedQuestions,
   };
 };

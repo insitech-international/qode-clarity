@@ -1,4 +1,3 @@
-// components/HomePage.js
 import React, { useEffect, useState, useCallback } from "react";
 import { 
   Typography, 
@@ -9,6 +8,7 @@ import {
   Grid,
   useTheme
 } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
 import CategoryCarousel from "../components/category/CategoryCarousel";
 import FeaturedQuestions from "../components/common/FeaturedQuestions";
 import { useQuestionData, useCategories } from "../hooks/useQuestionData";
@@ -20,6 +20,34 @@ const HomePage = () => {
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   const { fetchQuestions } = useQuestionData();
   const theme = useTheme();
+
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+  const phrases = [
+    { text: "Pythonic Implementation", color: "#FF9800" }, // Orange
+    { text: "Mathematical Abstraction", color: "#00BCD4" }, // Cyan
+    { text: "Real-World Analogies", color: "#FFEB3B" }, // Yellow
+    { text: "Storytelling Approach", color: "#8BC34A" }, // Light Green
+    { text: "Visual Representation", color: "#B39DDB" } // Red
+  ];
+
+  const typewriterVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+    exit: { opacity: 0, transition: { duration: 0.5 } }
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPhraseIndex((prevIndex) => (prevIndex + 1) % phrases.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const loadFeaturedQuestions = useCallback(async () => {
     try {
@@ -61,14 +89,30 @@ const HomePage = () => {
       >
         <Container maxWidth="lg">
           <Typography variant="h2" component="h1" gutterBottom align="center">
-            Python Query Vault
-          </Typography>
-          <Typography variant="h5" align="center" paragraph>
-            Code to the Top with Python: The 5 Why Approach
+            Code Clarity: The 5 How Approach
           </Typography>
           <Typography variant="body1" align="center" paragraph>
-            Develop expertise in solving complex algorithmic queries using the 5 Why method across five essential areas: Classification, Relevance, Approach, Constraints, and Code.
+            Code to the Top by solving complex algorithmic and data structure challenges using the 5 How method:
           </Typography>
+          <Box height="60px" display="flex" justifyContent="center" alignItems="center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPhraseIndex}
+                variants={typewriterVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <Typography variant="h5" align="center" style={{ color: phrases[currentPhraseIndex].color }}>
+                  {phrases[currentPhraseIndex].text.split('').map((char, index) => (
+                    <motion.span key={index} variants={letterVariants}>
+                      {char}
+                    </motion.span>
+                  ))}
+                </Typography>
+              </motion.div>
+            </AnimatePresence>
+          </Box>
         </Container>
       </Paper>
 
