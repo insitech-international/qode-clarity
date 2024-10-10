@@ -1,0 +1,2 @@
+# Solution for Quick Sort
+
