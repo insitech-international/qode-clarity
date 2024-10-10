@@ -13,7 +13,6 @@ idna==3.10
 inflection==0.5.1
 jsonschema==4.23.0
 jsonschema-specifications==2023.12.1
-motor==3.6.0
 multidict==6.1.0
 propcache==0.2.0
 pydantic==2.9.2
@@ -30,4 +29,3 @@ starlette==0.38.6
 typing_extensions==4.12.2
 uritemplate==4.1.1
 uvicorn==0.31.0
-yarl==1.14.0
