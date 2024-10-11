@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -96,7 +96,7 @@ export const useQuestionData = () => {
     setError(null);
 
     try {
-      const data = await fetchData("/featured-questions/");
+      const data = await fetchData("/featured_questions/");
       const categorizedQuestions = {};
 
       // Check if data is an array
