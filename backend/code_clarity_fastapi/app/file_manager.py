@@ -4,8 +4,8 @@ import logging
 from typing import List, Dict, Optional, Any, Tuple
 from pymongo import MongoClient
 from fastapi import FastAPI
-from bson import ObjectId
-
+from typing import Dict, Any, Optional
+from pymongo import MongoClient
 from code_clarity_fastapi.app.schemas import QuestionSchema, SolutionSchema, ProblemVersionSchema
 from code_clarity_fastapi.settings import settings
 
@@ -28,13 +28,7 @@ class DatabaseManager:
     def get_document(self, collection: str, query: Dict) -> Optional[Dict]:
         return self.db[collection].find_one(query)
 
-    def get_questions_list(
-        self, 
-        filters: Dict[str, str] = None, 
-        skip: int = 0, 
-        limit: Optional[int] = None
-    ) -> Tuple[List[Dict], int]:
-        filters = filters or {}
+    def get_questions_list(self, filters: Dict[str, Any], skip: int = 0, limit: Optional[int] = None) -> Tuple[List[Dict], int]:
         cursor = self.db.questions.find(filters).skip(skip)
         if limit:
             cursor = cursor.limit(limit)
@@ -44,15 +38,8 @@ class DatabaseManager:
         
         return questions, total
 
-import re
-import logging
-from typing import Dict, Any, Optional
-from pymongo import MongoClient
-from bson import ObjectId
-from pydantic import BaseModel
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+    def get_categories(self) -> List[str]:
+        return self.db.questions.distinct("category")
 
 class FileManager:
     @staticmethod
@@ -91,29 +78,6 @@ class FileManager:
         return sections
 
     @staticmethod
-    def parse_solution_file(content: str, file_name: str) -> Dict[str, Any]:
-        sections = FileManager.parse_markdown_file(content)
-        question_id = FileManager.extract_id_from_filename(file_name)
-
-        solution_data = {
-            "question_id": question_id,
-            "content": content
-        }
-
-        # Extract metadata
-        if 'metadata' in sections:
-            metadata = FileManager.parse_metadata(sections['metadata'])
-            solution_data.update(metadata)
-
-        # Extract other sections, only including populated fields
-        for field in SolutionSchema.__annotations__:
-            if field in sections and sections[field].strip():
-                solution_data[field] = sections[field].strip()
-
-        logger.info(f"Parsed solution data: {solution_data}")
-        return solution_data
-
-    @staticmethod
     def parse_metadata(content: str) -> Dict[str, Any]:
         metadata = {}
         for line in content.split('\n'):
@@ -135,12 +99,12 @@ class FileManager:
     @staticmethod
     def parse_problem_versions(versions_content: str) -> List[Dict]:
         problem_versions = []
-        version_blocks = re.split(r'\n#+\s*Version\s+\d+:', versions_content)
-        
-        for block in version_blocks[1:]:
+        version_blocks = re.findall(r'^###\s*Version\s*\d+:\s*(.+?)\n(?=###\s*Version|$)', versions_content, re.MULTILINE)
+
+        for block in version_blocks:
             lines = block.strip().split('\n')
             version_type = lines[0].strip()
-            description = '\n'.join(lines[1:]).strip()
+            description = '\n'.join(lines[1:-1]).strip()  # Exclude the last line
             
             examples = []
             example_sections = re.findall(r'Example:(.+?)(?=\n\n|\Z)', description, re.DOTALL)
@@ -174,7 +138,7 @@ class FileManager:
             for key in ['title', 'difficulty', 'category', 'subcategory', 'similar_questions', 'real_life_domains']:
                 if key in sections:
                     metadata[key] = sections[key]
-
+        logger.info(f"Sections: {sections}")
         return {
             "question_id": question_id,
             "title": metadata.get('title', ''),
@@ -197,7 +161,7 @@ class FileManager:
 
         # Ensure all required fields are present, even if empty
         solution_parts = [
-            "introduction", "mathematical_abstraction",
+            "introduction", "classification_rationale", "mathematical_abstraction",
             "pythonic_implementation", "real_world_analogies",
             "storytelling_approach", "visual_representation"
         ]

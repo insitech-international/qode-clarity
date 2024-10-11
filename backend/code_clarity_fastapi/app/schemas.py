@@ -9,13 +9,9 @@ class PyObjectId(ObjectId):
 
     @classmethod
     def validate(cls, v, _):
-        if isinstance(v, int):
-            return ObjectId.from_datetime(ObjectId.from_datetime(v))
-        if not isinstance(v, ObjectId):
-            if not ObjectId.is_valid(v):
-                raise ValueError("Invalid objectid")
-            v = ObjectId(v)
-        return v
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid objectid")
+        return ObjectId(v)
 
     @classmethod
     def __get_pydantic_json_schema__(cls, field_schema: Any) -> None:
@@ -38,7 +34,7 @@ class QuestionSchema(BaseModel):
         json_encoders={ObjectId: str}
     )
 
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     question_id: int
     title: str = ""
     difficulty: str = ""
@@ -51,7 +47,7 @@ class QuestionSchema(BaseModel):
     constraints: List[str] = Field(default_factory=list)
     notes: List[str] = Field(default_factory=list)
     content: str = ""
-    
+
 class SolutionSchema(BaseModel):
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -59,19 +55,18 @@ class SolutionSchema(BaseModel):
         json_encoders={ObjectId: str}
     )
 
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     question_id: int
     category: Optional[str] = ""
     subcategory: Optional[str] = ""
-    classification_rationale: str
-    introduction: str
-    mathematical_abstraction: str
-    pythonic_implementation: str
-    real_world_analogies: str
-    storytelling_approach: str
-    visual_representation: str
-    content: str
-
+    classification_rationale: Optional[str] = ""
+    introduction: Optional[str] = ""
+    mathematical_abstraction: Optional[str] = ""
+    pythonic_implementation: Optional[str] = ""
+    real_world_analogies: Optional[str] = ""
+    storytelling_approach: Optional[str] = ""
+    visual_representation: Optional[str] = ""
+    content: Optional[str] = ""
 
 class CategorySchema(BaseModel):
     model_config = ConfigDict(
@@ -80,6 +75,6 @@ class CategorySchema(BaseModel):
         json_encoders={ObjectId: str}
     )
 
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     name: str
     count: int
