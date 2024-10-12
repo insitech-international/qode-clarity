@@ -1,6 +1,6 @@
 # Classroom Allocation: Optimizing Resource Allocation
 
-## Metadata
+# Metadata
 
 - **ID**: 712
 - **Title**: Classroom Allocation
@@ -10,13 +10,13 @@
 - **Similar Questions**: LeetCode: 1386. Cinema Seat Allocation, HackerRank: Classroom Allocation, Project Euler: 48. Maximum Perimeter Triangle, Codeforces: 1520A - School Schedule
 - **Real Life Domains**: Educational Planning, Resource Management, Space Optimization
 
-## Problem Description:
+# Problem Description:
 
 Given a set of courses and available classrooms, the objective is to determine the optimal allocation of courses to classrooms while considering constraints such as course durations, classroom capacities, and time slots. The goal is to maximize the utilization of available resources and minimize scheduling conflicts.
 
-## Versions
+# Versions
 
-### Version 1: LeetCode 1386. Cinema Seat Allocation
+## Version 1: LeetCode 1386. Cinema Seat Allocation
 
 A cinema has n rows of seats, numbered from 1 to n, and there are ten seats in each row, labeled from 1 to 10 as shown in the figure above.
 
@@ -42,7 +42,7 @@ The time complexity of this solution is O(m log m), where m is the number of res
 
 The space complexity is O(m) as we need to store all reserved seats in the `rows` dictionary.
 
-### Version 2: HackerRank - Classroom Allocation
+## Version 2: HackerRank - Classroom Allocation
 
 There are n courses scheduled. Each course has an integer duration and takes place in a classroom. There are m classrooms available, each with a capacity to hold a specific number of students. All courses take place simultaneously and last for the same duration.
 
@@ -53,9 +53,9 @@ Example:
 Input: courses = [[100, 20], [200, 30]], maxStudents = 70, minCapacity = 4
 Output: 6
 
-### Version 3: Real-Life Classroom Allocation Scenarios
+## Version 3: Real-Life Classroom Allocation Scenarios
 
-**_Version 3.1: University Lecture Hall Scheduling_**
+**Scenario 1: University Lecture Hall Scheduling_**
 
 A university has multiple lecture halls with varying capacities. Given a list of courses, their durations, and the required audience sizes:
 
@@ -63,7 +63,7 @@ Allocate courses to lecture halls to maximize overall attendance.
 Ensure that the total capacity of assigned rooms equals or exceeds the sum of audience requirements.
 Identify potential overflow situations and suggest alternative room assignments.
 
-**_Version 3.2: Corporate Training Room Booking_**
+**Scenario 2: Corporate Training Room Booking_**
 
 A company has several training rooms with different capacities. Given a list of training sessions, their durations, and participant requirements:
 
@@ -71,7 +71,7 @@ Allocate sessions to rooms to maximize overall utilization of training facilitie
 Ensure that the capacity of assigned rooms meets or exceeds participant requirements for each session.
 Suggest alternative room assignments for sessions that cannot fit in the available rooms.
 
-**_Version 3.3: School Event Planning_**
+**Scenario 3: School Event Planning_**
 
 A school needs to plan various events throughout the year. Given a list of events, their durations, and expected attendee counts:
 
@@ -79,16 +79,16 @@ Allocate events to school facilities to maximize overall attendance.
 Ensure that the capacity of assigned rooms meets or exceeds expected attendee counts for each event.
 Identify potential overbooking situations and suggest alternative venue options.
 
-## Constraints
+# Constraints
 
 1 ≤ 𝑛,𝑚 ≤ 2000
 1 ≤ 𝑑𝑢𝑟𝑎𝑡𝑖𝑜𝑛 ≤ 1000
 1 ≤ 𝑚𝑎𝑥𝑆𝑡𝑢𝑑𝑒𝑛𝑡𝑠 ≤ 10^5
 1 ≤ 𝑚𝑖𝑛𝐶𝑎𝑝𝑎𝑐𝑖𝑡𝑦 ≤ 10
 
-## Notes
+# Notes
 
-### Solution Strategy for Resource Allocation
+**Solution Strategy for Resource Allocation**
 
 To solve real-life allocation scenarios efficiently, we can use a combination of greedy algorithms and heuristics:
 
@@ -101,7 +101,7 @@ To solve real-life allocation scenarios efficiently, we can use a combination of
 4. **Handle Overflows**: Suggest alternative room assignments if necessary.
 5. **Capacity Check**: Ensure that the total capacity of assigned rooms meets or exceeds the sum of audience or participant requirements.
 
-### Pseudocode Implementation for Resource Allocation
+**Pseudocode Implementation for Resource Allocation**
 
 ```pseudocode
 class ResourceAllocator:

@@ -1,6 +1,6 @@
-# Task Scheduling: Optimizing Resource Allocation
+**Task Scheduling: Optimizing Resource Allocation**
 
-## Metadata
+# Metadata
 
 - **ID**: 7122
 - **Title**: Task Scheduling: Optimizing Resource Allocation
@@ -10,13 +10,13 @@
 - **Similar Questions**: LeetCode: 1353. Maximum Number of Events That Can Be Attended, HackerRank: Greedy Florist
 - **Real Life Domains**: Project Management, Resource Allocation, Time Management, Factory Scheduling
 
-## Problem Description
+# Problem Description
 
 You are given a set of tasks, each with a start time, duration, and potentially other attributes such as deadlines or priorities. The goal is to schedule these tasks efficiently, typically maximizing the number of completed tasks or minimizing the total completion time.
 
-## Versions
+# Versions
 
-### Version 1: LeetCode - Maximum Number of Events That Can Be Attended
+## Version 1: LeetCode - Maximum Number of Events That Can Be Attended
 
 Given an array of events where events[i] = [startDayi, endDayi]. Every event i starts at startDayi and ends at endDayi.
 
@@ -30,7 +30,7 @@ Example:
 - Output: 3
 - Explanation: You can attend all the events, as they are not conflicting.
 
-### Version 2: HackerRank - Greedy Florist
+## Version 2: HackerRank - Greedy Florist
 
 A group of friends want to buy a bouquet of flowers. The florist wants to maximize his number of new customers and the money he makes. To do this, he decides he'll multiply the price of each flower by the number of that customer's previously purchased flowers plus 1. The first flower will be original price, (0+1)x, the next will be (1+1)x and so on.
 
@@ -44,25 +44,25 @@ Example:
 - Output: 11
 - Explanation: (1x1 + 1x2 + 1x3) + (2x4) = 6 + 5 = 11
 
-### Version 3: Real-Life Task Scheduling Scenarios
+## Version 3: Real-Life Task Scheduling Scenarios
 
-1. **Software Development Sprint Planning**:
-   You're a project manager planning a two-week sprint. Given a list of tasks with story points (effort estimation) and priorities:
-   a) Determine the maximum number of high-priority tasks that can be completed.
-   b) Create a schedule that balances task priorities and team workload.
-   c) Identify tasks that might be at risk of not being completed within the sprint.
+**Scenario 1: Software Development Sprint Planning**:
+You're a project manager planning a two-week sprint. Given a list of tasks with story points (effort estimation) and priorities:
+a) Determine the maximum number of high-priority tasks that can be completed.
+b) Create a schedule that balances task priorities and team workload.
+c) Identify tasks that might be at risk of not being completed within the sprint.
 
-2. **Factory Production Line Scheduling**:
-   A factory has multiple production lines, each capable of producing different products. Given a list of orders with deadlines and production times:
-   a) Determine the maximum number of orders that can be completed on time.
-   b) Create a production schedule that minimizes idle time on the production lines.
-   c) Suggest optimal maintenance windows that least affect order completion.
+**Scenario 2: Factory Production Line Scheduling**:
+A factory has multiple production lines, each capable of producing different products. Given a list of orders with deadlines and production times:
+a) Determine the maximum number of orders that can be completed on time.
+b) Create a production schedule that minimizes idle time on the production lines.
+c) Suggest optimal maintenance windows that least affect order completion.
 
-3. **University Course Timetabling**:
-   A university needs to schedule courses for the upcoming semester. Given a list of courses, available time slots, and room constraints:
-   a) Determine the maximum number of courses that can be scheduled without conflicts.
-   b) Create a timetable that maximizes room utilization and minimizes student conflicts.
-   c) Identify time slots where additional short courses or seminars could be added.
+**Scenario 3: University Course Timetabling**:
+A university needs to schedule courses for the upcoming semester. Given a list of courses, available time slots, and room constraints:
+a) Determine the maximum number of courses that can be scheduled without conflicts.
+b) Create a timetable that maximizes room utilization and minimizes student conflicts.
+c) Identify time slots where additional short courses or seminars could be added.
 
 For all scenarios, develop greedy algorithms that efficiently handle the scheduling challenges while considering real-world constraints and optimization goals.
 
@@ -77,7 +77,7 @@ tasks = [
     {"id": 4, "name": "API Integration", "story_points": 8, "priority": "High"},
     {"id": 5, "name": "Bug Fixes", "story_points": 3, "priority": "Low"}
 ]
-team_capacity = 30  # story points per sprint
+team_capacity = 30
 
 Output:
 {
@@ -95,7 +95,7 @@ Output:
 }
 ```
 
-## Constraints
+# Constraints
 
 - For Version 1:
 
@@ -112,7 +112,7 @@ Output:
 - For Version 3:
   - Constraints may vary based on the specific scenario (e.g., team capacity, production line capabilities).
 
-## Notes
+# Notes
 
 - The core principle of greedy algorithms in task scheduling is to make the locally optimal choice at each step with the hope of finding a global optimum.
 - For the LeetCode version, consider sorting events by end time and using a min-heap to track available events.
