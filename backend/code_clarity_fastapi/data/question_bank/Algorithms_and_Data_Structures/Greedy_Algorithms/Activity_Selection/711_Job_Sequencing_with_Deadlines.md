@@ -1,6 +1,6 @@
 # Job Sequencing: Maximizing Profit
 
-## Metadata
+# Metadata
 
 - **ID**: 711
 - **Title**: Job Sequencing: Maximizing Profit
@@ -12,13 +12,13 @@
   - GeeksforGeeks: Job Sequencing Problem
 - **Real Life Domains**: Project Management, Manufacturing, Time Management, Resource Allocation
 
-## Problem Description
+# Problem Description
 
 You are given a set of jobs. Each job has a deadline and a profit associated with it. The goal is to schedule the jobs in such a way that maximum profit can be obtained. Each job takes 1 unit of time and can only be performed before its deadline.
 
-## Versions
+# Versions
 
-### Version 1: LeetCode - Maximum Profit in Job Scheduling
+## Version 1: LeetCode - Maximum Profit in Job Scheduling
 
 You have a list of jobs where each job is represented as a tuple `[start, end, profit]`, meaning that a job starts at time `start`, ends at time `end`, and provides a profit of `profit`. The task is to maximize the profit by scheduling jobs without overlap.
 
@@ -30,7 +30,7 @@ Input: `jobs = [[1,2,50],[3,5,20],[6,19,100],[2,100,200]]`
 Output: 250
 Explanation: Schedule jobs `[1,2,50]` and `[6,19,100]` for maximum profit.
 
-### Version 2: GeeksforGeeks - Job Sequencing Problem
+## Version 2: GeeksforGeeks - Job Sequencing Problem
 
 Given a set of n jobs where each job i has a deadline and a profit associated with it. Each job takes 1 unit of time to complete and can only be performed before its deadline. The task is to maximize the total profit if only one job can be scheduled at a time.
 
@@ -40,19 +40,19 @@ Input: `jobs = [(Job 1: profit = 35, deadline = 3), (Job 2: profit = 30, deadlin
 Output: 80
 Explanation: Job sequence: `[Job 1, Job 3, Job 2]` gives maximum profit.
 
-### Version 3: Real-Life Job Scheduling Scenarios
+## Version 3: Real-Life Job Scheduling Scenarios
 
-1. **Freelance Project Management**: As a freelancer, you are given multiple projects, each with a deadline and a fixed payment upon completion. The goal is to select projects that maximize your total earnings while ensuring no deadlines are missed.
+**Scenario 1. Freelance Project Management**: As a freelancer, you are given multiple projects, each with a deadline and a fixed payment upon completion. The goal is to select projects that maximize your total earnings while ensuring no deadlines are missed.
    a) Schedule the projects to maximize your total income.
    b) Handle urgent projects that must be completed first.
    c) Manage overlapping projects that may require a trade-off between profit and completion time.
 
-2. **Factory Production Line**: A factory is given a set of orders, each with a due date and a profit margin. The objective is to prioritize orders that maximize profit while ensuring no order misses its due date.
+**Scenario 2. Factory Production Line**: A factory is given a set of orders, each with a due date and a profit margin. The objective is to prioritize orders that maximize profit while ensuring no order misses its due date.
    a) Develop a production plan that maximizes profit.
    b) Schedule maintenance windows that least impact high-profit orders.
    c) Minimize idle time between orders.
 
-3. **Contractor Time Management**: A contractor has multiple job offers, each with different pay and deadlines. The contractor has to decide which jobs to take to maximize earnings, while ensuring deadlines are respected.
+**Scenario 3. Contractor Time Management**: A contractor has multiple job offers, each with different pay and deadlines. The contractor has to decide which jobs to take to maximize earnings, while ensuring deadlines are respected.
    a) Prioritize high-paying jobs.
    b) Avoid taking too many jobs that cannot be completed on time.
    c) Handle last-minute urgent tasks that disrupt planned schedules.
@@ -83,7 +83,7 @@ Output:
 ]
 }
 
-## Constraints
+# Constraints
 
 - For Version 1:
 
@@ -100,7 +100,7 @@ Output:
 - For Version 3:
   - Constraints may vary depending on the scenario (e.g., available time, number of projects or orders).
 
-## Notes
+# Notes
 
 - The essence of the job sequencing problem is to make the optimal choice at each step, focusing on maximizing profit without missing any deadlines.
 - For Version 1, consider dynamic programming techniques along with sorting based on the ending times of jobs.

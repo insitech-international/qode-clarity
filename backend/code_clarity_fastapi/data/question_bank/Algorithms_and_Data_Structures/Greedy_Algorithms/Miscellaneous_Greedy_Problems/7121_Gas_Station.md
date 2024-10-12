@@ -1,6 +1,6 @@
-# Gas Station Management for Efficient Refueling
+**Gas Station Management for Efficient Refueling**
 
-## Metadata
+# Metadata
 
 - **ID**: 7121
 - **Title**: Gas Station Management for Efficient Refueling
@@ -10,13 +10,13 @@
 - **Similar Questions**: LeetCode (134. Gas Station), HackerRank (Fuel Station)
 - **Real Life Domains**: Transportation, Logistics, Operations Management, Energy Management
 
-## Problem Description
+# Problem Description
 
 You are tasked with optimizing resource allocation in various scenarios related to vehicle refueling, charging, or service scheduling. The goal is to maximize efficiency and complete as many tasks as possible within given constraints.
 
-## Versions
+# Versions
 
-### Version 1: LeetCode - Circular Route Gas Stations
+## Version 1: LeetCode - Circular Route Gas Stations
 
 There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i]. You have a car with an unlimited gas tank, and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. You begin the journey with an empty tank at one of the gas stations.
 
@@ -35,7 +35,7 @@ Example:
   - Travel to station 3. The cost is 5. Your gas is just enough to travel back to station 3.
   - Therefore, return 3 as the starting index.
 
-### Version 2: HackerRank - Race Fuel Management
+## Version 2: HackerRank - Race Fuel Management
 
 Jenny is competing in a race with her car containing X litres of fuel. There are N milestones in the competition. It takes no fuel to travel between gas stations, but at the ith fuel station, Pi amount of petrol is drained.
 
@@ -53,7 +53,7 @@ Example:
   8 2 13 12 3 6 12 13 5 6 12 2 2 1
 - Output: 3
 
-### Version 3: Real-Life Resource Allocation Scenarios
+## Version 3: Real-Life Resource Allocation Scenarios
 
 1. **Advanced Gas Station Management**:
    You manage a busy gas station with multiple pumps. Vehicles of various types (cars, trucks, motorcycles) arrive at different times, each with specific fuel requirements and time constraints.
@@ -123,14 +123,14 @@ Output:
 ]
 ```
 
-## Constraints
+# Constraints
 
 - Tasks can only be executed once.
 - Tasks must be completed within specified time windows or constraints.
 - Specific constraints vary based on the scenario (e.g., circular route, limited resources, dynamic conditions).
 - Solutions should handle edge cases and unexpected scenarios gracefully.
 
-## Notes
+# Notes
 
 - Solutions should be adaptable to various scenarios while maintaining core optimization logic.
 - Consider using greedy algorithms, dynamic programming, or advanced scheduling algorithms for efficient solutions.

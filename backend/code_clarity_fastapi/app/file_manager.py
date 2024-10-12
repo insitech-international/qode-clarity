@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from fastapi import FastAPI
 from typing import Dict, Any, Optional
 from pymongo import MongoClient
-from code_clarity_fastapi.app.schemas import QuestionSchema, SolutionSchema, ProblemVersionSchema
+from code_clarity_fastapi.app.schemas import QuestionSchema, SolutionSchema
 from code_clarity_fastapi.settings import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -73,8 +73,7 @@ class FileManager:
 
         if current_section and section_content.strip():
             sections[current_section] = section_content.strip()
-
-        logger.info(f"Parsed sections: {sections.keys()}")
+            
         return sections
 
     @staticmethod
@@ -97,49 +96,26 @@ class FileManager:
         return int(match.group(1)) if match else 0
 
     @staticmethod
-    def parse_problem_versions(versions_content: str) -> List[Dict]:
+    def parse_problem_versions(versions_content: str) -> List[str]:
         problem_versions = []
-        version_blocks = re.findall(r'^###\s*Version\s*\d+:\s*(.+?)\n(?=###\s*Version|$)', versions_content, re.MULTILINE)
+        # Updated regex pattern to capture everything including the version title
+        version_blocks = re.findall(r'(##\s*Version\s*\d+:.+?)(?=\n##\s*Version|\Z)', versions_content, re.DOTALL)
 
         for block in version_blocks:
-            lines = block.strip().split('\n')
-            version_type = lines[0].strip()
-            description = '\n'.join(lines[1:-1]).strip()  # Exclude the last line
-            
-            examples = []
-            example_sections = re.findall(r'Example:(.+?)(?=\n\n|\Z)', description, re.DOTALL)
-            
-            for example_text in example_sections:
-                example = {}
-                for field in ['Input', 'Output', 'Explanation']:
-                    match = re.search(rf'{field}:(.+?)(?={"|".join(["Input", "Output", "Explanation"])}:|\Z)', example_text, re.DOTALL)
-                    if match:
-                        example[field.lower()] = match.group(1).strip()
-                
-                examples.append(example)
-            
-            problem_versions.append({
-                "version_type": version_type,
-                "description": description,
-                "examples": examples
-            })
-        
-        return problem_versions
+            version = block.strip()
+            problem_versions.append(version)
 
+        return problem_versions
+    
     @staticmethod
-    def parse_question_file(content: str, file_name: str) -> Dict[str, Any]:
+    def parse_question_file(content: str, file_name: str) -> QuestionSchema:
         sections = FileManager.parse_markdown_file(content)
         problem_versions = FileManager.parse_problem_versions(sections.get('versions', ''))
         question_id = FileManager.extract_id_from_filename(file_name)
 
-        # If 'metadata' section is missing, try to extract metadata from other sections
-        metadata = sections.get('metadata', {})
-        if not metadata:
-            for key in ['title', 'difficulty', 'category', 'subcategory', 'similar_questions', 'real_life_domains']:
-                if key in sections:
-                    metadata[key] = sections[key]
-        logger.info(f"Sections: {sections}")
-        return {
+        metadata = FileManager.parse_metadata(sections.get('metadata', ''))
+        
+        question_data = {
             "question_id": question_id,
             "title": metadata.get('title', ''),
             "difficulty": metadata.get('difficulty', ''),
@@ -154,33 +130,30 @@ class FileManager:
             "content": content
         }
 
+        return QuestionSchema(**question_data)
+
     @staticmethod
-    def parse_solution_file(content: str, file_name: str) -> Dict[str, Any]:
+    def parse_solution_file(content: str, file_name: str) -> SolutionSchema:
         sections = FileManager.parse_markdown_file(content)
         question_id = FileManager.extract_id_from_filename(file_name)
 
-        # Ensure all required fields are present, even if empty
-        solution_parts = [
-            "introduction", "classification_rationale", "mathematical_abstraction",
-            "pythonic_implementation", "real_world_analogies",
-            "storytelling_approach", "visual_representation"
-        ]
-
+        metadata = FileManager.parse_metadata(sections.get('metadata', ''))
+        
         solution_data = {
             "question_id": question_id,
+            "category": metadata.get('category', ''),
+            "subcategory": metadata.get('subcategory', ''),
+            "classification_rationale": sections.get('classification_rationale', ''),
+            "introduction": sections.get('introduction', ''),
+            "mathematical_abstraction": sections.get('mathematical_abstraction', ''),
+            "pythonic_implementation": sections.get('pythonic_implementation', ''),
+            "real_world_analogies": sections.get('real_world_analogies', ''),
+            "storytelling_approach": sections.get('storytelling_approach', ''),
+            "visual_representation": sections.get('visual_representation', ''),
             "content": content
         }
 
-        # Extract metadata
-        if 'metadata' in sections:
-            metadata = FileManager.parse_metadata(sections['metadata'])
-            solution_data.update(metadata)
-
-        # Extract other sections
-        for part in solution_parts:
-            solution_data[part] = sections.get(part, '').strip()
-
-        return solution_data
+        return SolutionSchema(**solution_data)
 
     @staticmethod
     def find_file_by_id(base_dir: str, file_id: int, file_type: str) -> Optional[str]:
@@ -214,15 +187,15 @@ class QuestionManager:
             existing_question = self.db_manager.get_document('questions', {"question_id": question_id})
             if force_update or not existing_question or existing_question.get('content') != content:
                 # Only update fields that are present in the parsed data
-                update_data = {k: v for k, v in question_data.items() if v}
+                update_data = question_data.dict(exclude_unset=True)
                 self.db_manager.upsert_document('questions', update_data)
             
             # Merge existing data with new data
             if existing_question:
                 existing_question.update(update_data)
-                return QuestionSchema.model_validate(existing_question)
+                return QuestionSchema(**existing_question)
             else:
-                return QuestionSchema.model_validate(update_data)
+                return question_data
         except Exception as e:
             logger.error(f"Error loading question for ID {question_id}: {str(e)}", exc_info=True)
             return None
@@ -240,15 +213,15 @@ class QuestionManager:
             existing_solution = self.db_manager.get_document('solutions', {"question_id": question_id})
             if force_update or not existing_solution or existing_solution.get('content') != content:
                 # Only update fields that are present in the parsed data
-                update_data = {k: v for k, v in solution_data.items() if v}
+                update_data = solution_data.dict(exclude_unset=True)
                 self.db_manager.upsert_document('solutions', update_data)
             
             # Merge existing data with new data
             if existing_solution:
                 existing_solution.update(update_data)
-                return SolutionSchema.model_validate(existing_solution)
+                return SolutionSchema(**existing_solution)
             else:
-                return SolutionSchema.model_validate(update_data)
+                return solution_data
         except Exception as e:
             logger.error(f"Error loading solution for question ID {question_id}: {str(e)}", exc_info=True)
             return None
@@ -285,5 +258,7 @@ def update_database(base_dir: str):
     logger.info(f"Processed {question_count} questions and {solution_count} solutions")
 
 if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

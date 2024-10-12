@@ -17,16 +17,6 @@ class PyObjectId(ObjectId):
     def __get_pydantic_json_schema__(cls, field_schema: Any) -> None:
         field_schema.update(type="string")
 
-class ExampleSchema(BaseModel):
-    input: Optional[str] = None
-    output: Optional[str] = None
-    explanation: Optional[str] = None
-
-class ProblemVersionSchema(BaseModel):
-    version_type: str
-    description: str
-    examples: List[ExampleSchema]
-
 class QuestionSchema(BaseModel):
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -43,11 +33,10 @@ class QuestionSchema(BaseModel):
     similar_questions: List[str] = Field(default_factory=list)
     real_life_domains: List[str] = Field(default_factory=list)
     problem_description: str = ""
-    problem_versions: List[ProblemVersionSchema] = Field(default_factory=list)
+    problem_versions: List[str] = Field(default_factory=list)
     constraints: List[str] = Field(default_factory=list)
     notes: List[str] = Field(default_factory=list)
     content: str = ""
-
 class SolutionSchema(BaseModel):
     model_config = ConfigDict(
         arbitrary_types_allowed=True,

@@ -772,3 +772,47 @@ Some categories group problems based on their complexity levels:
 
 Miscellaneous Greedy Problems: This likely contains a mix of simpler and more complex problems not fitting neatly into other categories.
 This categorization allows programmers to gradually build up their skills from simpler to more complex problems.
+
+
+
+# Metadata
+
+- **ID**: [Insert ID]
+- **Title**: [Insert Title]
+- **Difficulty**: [Insert Difficulty]
+- **Category**: [Insert Category]
+- **Subcategory**: [Insert Subcategory]
+- **Similar Questions**: [Insert Similar Questions]
+- **Real Life Domains**: [Insert Real Life Domains]
+
+# Problem Description
+
+[Insert brief description of the problem]
+
+# Versions
+
+## Version 1: [Original Source]
+[Problem statement from original source]
+
+## Version 2: [Your Explanation]
+[Explain the problem in simpler terms, including real-life scenarios]
+
+# Examples
+
+## Example 1:
+Input: [Insert input]
+Output: [Insert expected output]
+Explanation: [Brief explanation of the solution]
+
+## Example 2:
+Input: [Insert input]
+Output: [Insert expected output]
+Explanation: [Brief explanation of the solution]
+
+# Constraints
+
+[Insert constraints, if any]
+
+# Notes
+
+[Include any additional notes, key concepts, or insights]

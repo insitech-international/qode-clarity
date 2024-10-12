@@ -1,6 +1,6 @@
 # Investment Portfolio Optimization
 
-## Metadata
+# Metadata
 
 - **ID**: 721
 - **Title**: Investment Portfolio Optimization
@@ -10,21 +10,21 @@
 - **Similar Questions**: LeetCode (1710. maximum Units on a Truck), GeeksforGeeks (Fractional Knapsack Problem), HackerRank (Fractional Knapsack Problem)
 - **Real Life Domains**: Financial Planning and Portfolio Management, Logistics and Supply Chain Management, Manufacturing and Production Planning
 
-## Problem Description
+# Problem Description
 
 The general task in fractional knapsack problems is to optimize resource allocation or item selection within a given constraint.
 
-## Versions
+# Versions
 
-### Version 1: LeetCode - Maximum Units on a Truck
+## Version 1: LeetCode - Maximum Units on a Truck
 
 Given n items where every item has a weight and a value, determine the items taking up exactly one truckload (of capacity w). The truck has unlimited space after the w capacity. What items should be picked?
 
-### Version 2: GeeksforGeeks - Fractional Knapsack Problem
+## Version 2: GeeksforGeeks - Fractional Knapsack Problem
 
 Given weights and profits of N items, in the form of {profit, weight}, put these items in a knapsack of capacity W to get the maximum total profit in the knapsack. In Fractional Knapsack, we can break items for maximizing the total value of the knapsack.
 
-### Version 3: HackerRank - Fractional Knapsack Problem
+## Version 3: HackerRank - Fractional Knapsack Problem
 
 Given n items, each with a weight wi and a value vi, determine the number of each item to include in a collection so that the total weight is less than or equal to W and the total value is as large as possible.
 
@@ -41,7 +41,7 @@ Given n items, each with a weight wi and a value vi, determine the number of eac
 
 While there are slight variations in how the problems are presented across platforms, these elements remain consistent across the examples provided. The core concept of maximizing value within a given capacity constraint is common to all these problems.
 
-### Version 4: Real Life Scenario
+## Version 4: Real Life Scenario
 
 **Scenario 1. Investment Portfolio Optimization**
 
@@ -77,14 +77,14 @@ The company wants to maximize the total value of cargo they transport within the
 
 In all these scenarios, the fractional knapsack algorithm would help determine the optimal allocation of resources or selection of items to maximize the objective function (profit, returns, or cargo value) within the given constraints.
 
-## Constraints
+# Constraints
 
 - Number of items (N) is typically in the range of 1 to 1000.
 - Weights and profits/values are positive integers.
 - Capacity W is usually in the range of 1 to 100,000.
 - The algorithm must maximize the total value/profit within the given capacity constraint.
 
-## Notes
+# Notes
 
 Fractional selection: Unlike traditional 0/1 knapsack problems, fractional knapsack allows partial selections of items.
 Greedy approach: These problems are typically solved using a greedy algorithm, sorting items based on their value-to-weight ratio and selecting them accordingly.

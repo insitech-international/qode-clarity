@@ -1,6 +1,6 @@
 # Investment Portfolio Optimization
 
-## Metadata
+# Metadata
 
 - **ID**: 721
 - **Title**: Investment Portfolio Optimization
