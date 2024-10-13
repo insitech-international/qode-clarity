@@ -1,5 +1,5 @@
 // hooks/useQuestionData.js
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -13,6 +13,7 @@ const fetchData = async (url, params) => {
     const response = await api.get(url, { params });
     return response.data;
   } catch (error) {
+    console.error("API Error:", error);
     throw new Error(error.response?.data?.error || "An error occurred");
   }
 };
@@ -26,22 +27,16 @@ export const useCategories = () => {
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        const response = await api.get("/categories/");
-        const data = response.data;
-
-        if (data.results && Array.isArray(data.results.categories)) {
-          const extractedCategories = data.results.categories.map(
-            (category) => ({
-              name: category.name,
-              count: category.count,
-              diagramPath: category.diagram_path,
-              questions: category.questions.map((q) => ({
-                question: q.question,
-                solution: q.solution,
-              })),
-            })
-          );
-
+        const data = await fetchData("/categories/");
+        if (Array.isArray(data)) {
+          const extractedCategories = data
+            .filter((category) => category !== "") // Remove empty categories
+            .map((category) => ({
+              name: category,
+              count: 0, // We don't have this information in the current response
+              diagramPath: "", // We don't have this information in the current response
+              questions: [], // We don't have this information in the current response
+            }));
           setCategories(extractedCategories);
         } else {
           throw new Error("Invalid data structure received from API");
@@ -69,10 +64,9 @@ export const useQuestionData = () => {
   const fetchQuestions = useCallback(async (params = {}) => {
     setLoading(true);
     setError(null);
-
     try {
       const data = await fetchData("/questions/", params);
-      console.log(data);
+      setQuestions(data.results || []);
       return data.results || [];
     } catch (err) {
       console.error("Error fetching questions:", err);
@@ -84,7 +78,8 @@ export const useQuestionData = () => {
   }, []);
 
   const fetchQuestionDetails = useCallback(async (questionId) => {
-    return await fetchData(`/questions/${questionId}/`);
+    const data = await fetchData(`/questions/${questionId}/`);
+    return data;
   }, []);
 
   const fetchSolution = useCallback(async (questionId) => {

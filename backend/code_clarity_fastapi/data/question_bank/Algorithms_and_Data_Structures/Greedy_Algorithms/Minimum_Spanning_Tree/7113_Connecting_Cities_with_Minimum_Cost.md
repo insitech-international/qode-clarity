@@ -5,7 +5,7 @@
 - **ID**: 7113
 - **Title**: Connecting Cities with Minimum Cost
 - **Difficulty**: Hard
-- **Category**: Greedy Algorithm
+- **Category**: Greedy Algorithms
 - **Subcategory**: Minimum Spanning Tree
 - **Similar Questions**: LeetCode (1584. Min Cost to Connect All Points), GeeksForGeeks (Minimum cost to connect all cities)
 - **Real Life Domains**: Telecommunications, Transportation Networks, Logistics

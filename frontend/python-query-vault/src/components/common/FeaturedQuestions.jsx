@@ -10,12 +10,26 @@ const FeaturedQuestions = () => {
 
   useEffect(() => {
     const loadFeaturedQuestions = async () => {
-      const questions = await fetchFeaturedQuestions();
-      setCategorizedQuestions(questions);
+      try {
+        const questions = await fetchFeaturedQuestions();
+        // Flatten the nested structure
+        const flattenedQuestions = {};
+        Object.values(questions).forEach(category => {
+          category.forEach(question => {
+            if (!flattenedQuestions[question.category]) {
+              flattenedQuestions[question.category] = [];
+            }
+            flattenedQuestions[question.category].push(question);
+          });
+        });
+        setCategorizedQuestions(flattenedQuestions);
+      } catch (error) {
+        console.error("Error fetching featured questions:", error);
+      }
     };
     loadFeaturedQuestions();
   }, [fetchFeaturedQuestions]);
-
+  
   if (loading) {
     return <Typography>Loading featured questions...</Typography>;
   }
@@ -47,34 +61,39 @@ const FeaturedQuestions = () => {
           </Typography>
           <Grid container spacing={3}>
             {questions.map((question) => (
-              <Grid item xs={12} sm={6} md={4} key={question.id}>
+              <Grid item xs={12} sm={6} md={4} key={question.question_id}>
                 <Card variant="outlined" sx={{ height: '100%', transition: '0.3s', '&:hover': { boxShadow: 6 } }}>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
-                      {question.title}
+                      {question.title || "Untitled Question"}
                     </Typography>
-                    <Chip
-                      label={`Subcategory: ${question.subcategory}`}
-                      color="success"
-                      size="small"
-                      sx={{ marginBottom: '1rem' }}
-                    />
-                    <Chip
-                      label={`Difficulty: ${question.difficulty}`}
-                      color={question.difficulty === "Hard" ? "error" : question.difficulty === "Medium" ? "warning" : "success"}
-                      size="small"
-                      sx={{ marginBottom: '1rem' }}
-                    />
-
+                    {question.subcategory && (
+                      <Chip
+                        label={`Subcategory: ${question.subcategory}`}
+                        color="success"
+                        size="small"
+                        sx={{ marginBottom: '1rem' }}
+                      />
+                    )}
+                    {question.difficulty && (
+                      <Chip
+                        label={`Difficulty: ${question.difficulty}`}
+                        color={question.difficulty === "Hard" ? "error" : question.difficulty === "Medium" ? "warning" : "success"}
+                        size="small"
+                        sx={{ marginBottom: '1rem' }}
+                      />
+                    )}
                     <Typography variant="body2" paragraph>
-                      {question.problem_versions[0].description.slice(0, 150)}...
+                      {question.problem_description
+                      ? `${question.problem_description.slice(0, 150)}...`
+                      : "No description available."}
                     </Typography>
                     <div>
-                      {question.real_life_domains.slice(0, 3).map((domain, index) => (
+                      {question.real_life_domains && question.real_life_domains.slice(0, 3).map((domain, index) => (
                         <Chip key={index} label={domain} variant="outlined" size="small" sx={{ marginRight: '0.5rem', marginBottom: '0.5rem' }} />
                       ))}
                     </div>
-                    <Link to={`/question/${question.id}`} style={{ textDecoration: 'none', color: '#1976d2', marginTop: '1rem', display: 'inline-block' }}>
+                    <Link to={`/question/${question.question_id}`} style={{ textDecoration: 'none', color: '#1976d2', marginTop: '1rem', display: 'inline-block' }}>
                       View Details
                     </Link>
                   </CardContent>
