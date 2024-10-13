@@ -5,7 +5,7 @@
 - **ID**: 712
 - **Title**: Jump Game for Emergency Response
 - **Difficulty**: Medium
-- **Category**: Greedy Algorithm
+- **Category**: Greedy Algorithms
 - **Subcategory**: Activity Selection
 - **Similar Questions**:
   - LeetCode: 55. Jump Game

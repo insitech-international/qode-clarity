@@ -29,14 +29,22 @@ const CombinedQuestionSolutionView = ({ question, solution }) => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} lg={6}>
-        <QuestionCard question={question} />
+        {question ? (
+          <QuestionCard question={question} />
+        ) : (
+          <Typography variant="h6">No question data available</Typography>
+        )}
       </Grid>
       <Grid item xs={12} lg={6}>
-        <SolutionCard
-          solution={solution}
-          tabValue={tabValue}
-          handleTabChange={handleTabChange}
-        />
+        {solution ? (
+          <SolutionCard
+            solution={solution}
+            tabValue={tabValue}
+            handleTabChange={handleTabChange}
+          />
+        ) : (
+          <Typography variant="h6">No solution data available</Typography>
+        )}
       </Grid>
     </Grid>
   );
@@ -59,7 +67,7 @@ const QuestionCard = ({ question }) => (
             color: "primary.contrastText",
           }}
         >
-          <Typography variant="body1">ID: {question.id}</Typography>
+          <Typography variant="body1">ID: {question.question_id}</Typography>
         </Paper>
 
         <Box
@@ -73,7 +81,11 @@ const QuestionCard = ({ question }) => (
             borderColor: "divider",
           }}
         >
-          <Typography variant="h6" align="center">
+          <Typography
+            variant="h6"
+            align="center"
+            sx={{ color: "primary.main", fontWeight: "bold" }}
+          >
             {question.title}
           </Typography>
           <Typography variant="body2" align="center" color="text.secondary">
@@ -114,23 +126,7 @@ const QuestionCard = ({ question }) => (
       <AccordionSection title="Problem Versions">
         {question.problem_versions.map((version, index) => (
           <Box key={index} mb={2}>
-            <Typography variant="subtitle1">{version.version_type}</Typography>
-            <FormatContent content={version.description} />
-            {version.examples.map((example, exIndex) => (
-              <Box key={exIndex} mt={1}>
-                <Typography variant="body2">
-                  <strong>Input:</strong> {example.input}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Output:</strong> {example.output}
-                </Typography>
-                {example.explanation && (
-                  <Typography variant="body2">
-                    <strong>Explanation:</strong> {example.explanation}
-                  </Typography>
-                )}
-              </Box>
-            ))}
+            <FormatContent content={version} />
           </Box>
         ))}
       </AccordionSection>
@@ -192,7 +188,7 @@ const SolutionCard = ({ solution, tabValue, handleTabChange }) => {
   return (
     <Card elevation={3}>
       <CardContent>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{ color: "secondary.main" }}>
           Solution
         </Typography>
         <Tabs
@@ -271,7 +267,7 @@ const FormatContent = ({ content }) => {
 
 const Section = ({ title, children }) => (
   <Box mb={3}>
-    <Typography variant="h6" gutterBottom>
+    <Typography variant="h6" gutterBottom sx={{ color: "primary.main" }}>
       {title}
     </Typography>
     {children}
@@ -282,7 +278,9 @@ const Section = ({ title, children }) => (
 const AccordionSection = ({ title, children }) => (
   <Accordion>
     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-      <Typography variant="h6">{title}</Typography>
+      <Typography variant="h6" sx={{ color: "primary.dark" }}>
+        {title}
+      </Typography>
     </AccordionSummary>
     <AccordionDetails>{children}</AccordionDetails>
   </Accordion>
