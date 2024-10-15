@@ -1,3 +1,4 @@
+import re
 from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from typing import List, Optional, Dict, Any
 from code_clarity_fastapi.app.schemas import QuestionSchema, SolutionSchema, CategorySchema
@@ -21,6 +22,7 @@ def initialize(qm: QuestionManager, dbm: DatabaseManager):
 
 @router.get("/questions/", response_model=Dict[str, Any])
 def list_questions(
+    search: Optional[str] = None,
     category: Optional[str] = None,
     difficulty: Optional[str] = None,
     company: Optional[str] = None,
@@ -36,6 +38,20 @@ def list_questions(
         filters['company'] = company
 
     try:
+        if search:
+            # Split the search query into words
+            search_words = search.lower().split()
+            
+            # Create a regex pattern that matches any of the search words
+            regex_pattern = '|'.join(map(re.escape, search_words))
+            
+            # Add the search filter to match against title, content, or tags
+            filters['$or'] = [
+                {'title': {'$regex': regex_pattern, '$options': 'i'}},
+                {'content': {'$regex': regex_pattern, '$options': 'i'}},
+                {'tags': {'$in': search_words}}
+            ]
+
         questions, total = db_manager.get_questions_list(filters, skip, limit)
         if not questions:
             return {"questions": [], "total": 0, "skip": skip, "limit": limit}
@@ -148,10 +164,11 @@ async def test_db_connection():
         raise HTTPException(status_code=500, detail=f"Database connection failed: {str(e)}")
 
 @router.get("/list-question-ids")
-async def list_question_ids():
+def get_questions_list(self, filters: Dict[str, Any], skip: int, limit: int):
     try:
-        question_ids = list(db_manager.db.questions.distinct("question_id"))
-        return {"question_ids": question_ids}
+        total = self.db.questions.count_documents(filters)
+        questions = list(self.db.questions.find(filters).skip(skip).limit(limit))
+        return questions, total
     except Exception as e:
-        logger.error(f"Error listing question IDs: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        logger.error(f"Error in get_questions_list: {str(e)}")
+        raise
