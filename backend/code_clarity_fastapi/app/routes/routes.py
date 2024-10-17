@@ -1,7 +1,7 @@
 import re
-from fastapi import APIRouter, HTTPException, Query, Request, Depends
+from fastapi import APIRouter, HTTPException, Query, Request
 from typing import List, Optional, Dict, Any
-from code_clarity_fastapi.app.schemas import QuestionSchema, SolutionSchema, CategorySchema
+from code_clarity_fastapi.app.schemas import QuestionSchema, SolutionSchema
 from code_clarity_fastapi.app.file_manager import update_database, DatabaseManager, FileManager, QuestionManager
 from code_clarity_fastapi.settings import settings
 import logging
@@ -19,49 +19,6 @@ def initialize(qm: QuestionManager, dbm: DatabaseManager):
     global question_manager, db_manager
     question_manager = qm
     db_manager = dbm
-
-@router.get("/questions/", response_model=Dict[str, Any])
-def list_questions(
-    search: Optional[str] = None,
-    category: Optional[str] = None,
-    difficulty: Optional[str] = None,
-    company: Optional[str] = None,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1, le=100)
-):
-    filters: Dict[str, Any] = {}
-    if category:
-        filters['category'] = category
-    if difficulty:
-        filters['difficulty'] = difficulty
-    if company:
-        filters['company'] = company
-
-    try:
-        if search:
-            # Split the search query into words
-            search_words = search.lower().split()
-            
-            # Create a regex pattern that matches any of the search words
-            regex_pattern = '|'.join(map(re.escape, search_words))
-            
-            # Add the search filter to match against title, content, or tags
-            filters['$or'] = [
-                {'title': {'$regex': regex_pattern, '$options': 'i'}},
-                {'content': {'$regex': regex_pattern, '$options': 'i'}},
-                {'tags': {'$in': search_words}}
-            ]
-
-        questions, total = db_manager.get_questions_list(filters, skip, limit)
-        if not questions:
-            return {"questions": [], "total": 0, "skip": skip, "limit": limit}
-        
-        # Convert ObjectId to string
-        questions_json = json.loads(json_util.dumps(questions))
-        return {"questions": questions_json, "total": total, "skip": skip, "limit": limit}
-    except Exception as e:
-        logger.error(f"Error fetching questions: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/featured_questions/")
 def featured_questions():
@@ -172,3 +129,94 @@ def get_questions_list(self, filters: Dict[str, Any], skip: int, limit: int):
     except Exception as e:
         logger.error(f"Error in get_questions_list: {str(e)}")
         raise
+
+@router.get("/questions/", response_model=Dict[str, Any])
+def list_questions(
+    search: Optional[str] = None,
+    category: Optional[str] = None,
+    difficulty: Optional[str] = None,
+    company: Optional[str] = None,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100)
+):
+    filters: Dict[str, Any] = {}
+    if category:
+        filters['category'] = category
+    if difficulty:
+        filters['difficulty'] = difficulty
+    if company:
+        filters['company'] = company
+
+    try:
+        if search:
+            # Split the search query into words
+            search_words = search.lower().split()
+            
+            # Create a regex pattern that matches any of the search words
+            regex_pattern = '|'.join(map(re.escape, search_words))
+            
+            # Add the search filter to match against title, content, or tags
+            filters['$or'] = [
+                {'title': {'$regex': regex_pattern, '$options': 'i'}},
+                {'content': {'$regex': regex_pattern, '$options': 'i'}},
+                {'tags': {'$in': search_words}}
+            ]
+
+        questions, total = db_manager.get_questions_list(filters, skip, limit)
+        if not questions:
+            return {"questions": [], "total": 0, "skip": skip, "limit": limit}
+        
+        # Convert ObjectId to string
+        questions_json = json.loads(json_util.dumps(questions))
+        return {"questions": questions_json, "total": total, "skip": skip, "limit": limit}
+    except Exception as e:
+        logger.error(f"Error fetching questions: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/posts/", response_model=Dict[str, Any])
+def list_posts_by_category(
+    category: Optional[str] = None,
+    subcategory: Optional[str] = None,
+    search: Optional[str] = None,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100)
+):
+    filters: Dict[str, Any] = {}
+    if category:
+        filters['category'] = category
+    if subcategory:
+        filters['subcategory'] = subcategory
+
+    try:
+        if search:
+            # Create a regex pattern to match search keywords in post title/content
+            search_words = search.lower().split()
+            regex_pattern = '|'.join(map(re.escape, search_words))
+            
+            # Add search filter to match title or content
+            filters['$or'] = [
+                {'title': {'$regex': regex_pattern, '$options': 'i'}},
+                {'content': {'$regex': regex_pattern, '$options': 'i'}}
+            ]
+
+        # Fetch posts based on filters, pagination applied by skip and limit
+        posts, total = db_manager.get_posts_list(filters, skip, limit)
+        if not posts:
+            return {"posts": [], "total": 0, "skip": skip, "limit": limit}
+        
+        # Convert ObjectId to string for response
+        posts_json = json.loads(json_util.dumps(posts))
+        return {"posts": posts_json, "total": total, "skip": skip, "limit": limit}
+    except Exception as e:
+        logger.error(f"Error fetching posts: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+def get_posts_list(self, filters: Dict[str, Any], skip: int, limit: int):
+    try:
+        total = self.db.posts.count_documents(filters)
+        posts = list(self.db.posts.find(filters).skip(skip).limit(limit))
+        return posts, total
+    except Exception as e:
+        logger.error(f"Error fetching posts list: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch posts")

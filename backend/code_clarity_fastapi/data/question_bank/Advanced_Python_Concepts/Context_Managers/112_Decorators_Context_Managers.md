@@ -4,7 +4,7 @@
 - **Title**: Context Managers as Decorators
 - **Difficulty**: Hard
 - **Category**: Advanced Python Concepts
-- **Subcategory**: Decorators Context Managers
+- **Subcategory**: Context Managers
 - **Similar Questions**: 111_File_Operations
 - **Real Life Domains**: File Handling, Error Suppression, Output Redirection, Resource Management
 

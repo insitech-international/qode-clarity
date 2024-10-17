@@ -5,7 +5,7 @@
 - **ID**: 7125
 - **Title**: Merge Intervals for Calendar Optimization
 - **Difficulty**: Medium
-- **Category**: Array Algorithms
+- **Category**: Greedy Algorithms
 - **Subcategory**: Miscellaneous Greedy Problems
 - **Similar Questions**: LeetCode (56. Merge Intervals)
 - **Real Life Domains**: Calendar Management, Resource Allocation, Time Blocking
