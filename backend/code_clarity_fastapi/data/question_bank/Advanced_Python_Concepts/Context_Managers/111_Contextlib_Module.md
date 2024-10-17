@@ -6,7 +6,7 @@
 - **Title**: File Operations
 - **Difficulty**: Hard
 - **Category**: Advanced Python Concepts
-- **Subcategory**: Contextlib Managers
+- **Subcategory**: Context Managers
 - **Similar Questions**: \*\*\*\*
 - **Real Life Domains**: File Operations, Database Interactions, Threading and Concurrency, Environment Setup and Teardown:
 

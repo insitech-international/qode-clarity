@@ -22,6 +22,10 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route
+            path="/category/:categoryName/questions"
+            element={<CategoryPage />}
+          />
           <Route path="/question/:id" element={<QuestionPage />} />
           <Route path="/search" element={<SearchPage />} />{" "}
           {/* Add this new route */}

@@ -271,13 +271,6 @@ const CategoryCarousel = () => {
             <CategoryDescription>
               {getCategoryDescription(category)}
             </CategoryDescription>
-            <CTAButton
-              to={`/category/${category.name
-                .toLowerCase()
-                .replace(/\s+/g, "-")}`}
-            >
-              View All Questions
-            </CTAButton>
           </CategoryContent>
         </CategoryCard>
       ))}
