@@ -5,8 +5,8 @@
 - **ID**: 912
 - **Title**: Strategy Design Pattern
 - **Difficulty**: Medium
-- **Category**: Behavioral Patterns
-- **Subcategory**: Algorithm Encapsulation
+- **Category**: Design Patterns
+- **Subcategory**: Behavioral Patterns
 - **Similar Questions**: LeetCode: 146. LRU Cache, HackerRank: Algorithms: Sorting, GeeksforGeeks: Strategy Pattern, CodeChef: LRUCACHE (LRU Cache Implementation)
 - **Real Life Domains**: Game Development, Route Planning, Payment Processing, Compression Algorithms
 

@@ -22,7 +22,7 @@ Greedy algorithm (GA) problems can be broadly classified based on four core char
 
 Problem Domain Specificity: This refers to the specific area where GAs are used. E.g: Activity Selection, Task Sheduling - This category of GA deal with scheduling tasks.
 
-This problem (Question id: 7121) is a classical example of an Activity Selection problem and fits the GA approach for a few reasons:
+This problem is a classical example of an Activity Selection problem and fits the GA approach for a few reasons:
 
 Optimal Substructure: You can break down the problem into smaller parts, solving each part step by step.
 Greedy Choice Property: At each step, you can make a choice that seems best at the moment, without worrying about future consequences.

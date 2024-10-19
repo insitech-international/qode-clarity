@@ -7,8 +7,7 @@
 - **Difficulty**: Medium
 - **Category**: Exception Handling
 - **Subcategory**: Error Specification
-- **Similar Questions**:
-  - LeetCode: 703. Kth Largest Element in a Stream (conceptually similar in terms of custom data structures), HackerRank: Python Exceptions, GeeksforGeeks: User defined Exceptions in Python, CodeChef: CUSTOMEXCEPT (Custom Exception Implementation)
+- **Similar Questions**: LeetCode: 703. Kth Largest Element in a Stream (conceptually similar in terms of custom data structures), HackerRank: Python Exceptions, GeeksforGeeks: User defined Exceptions in Python, CodeChef: CUSTOMEXCEPT (Custom Exception Implementation)
 - **Real Life Domains**: Financial Systems, Healthcare Applications, E-commerce Platforms, Network Protocol Implementations, Data Validation Systems
 
 # Problem Description

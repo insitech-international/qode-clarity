@@ -2,6 +2,8 @@
 
 # Metadata
 
+- **ID**: 1712
+- **Title**: Counter Problem
 - **Category**: Standard Library
 - **Subcategory**: Collections Module
 - **Difficulty**: Medium

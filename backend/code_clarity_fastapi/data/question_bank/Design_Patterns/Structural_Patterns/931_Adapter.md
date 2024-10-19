@@ -5,8 +5,8 @@
 - **ID**: 931
 - **Title**: Adapter Design Pattern
 - **Difficulty**: Medium
-- **Category**: Structural Patterns
-- **Subcategory**: Interface Matching
+- **Category**: Design Patterns
+- **Subcategory**: Structural Patterns
 - **Similar Questions**: LeetCode: 146. LRU Cache (conceptually similar in terms of adapting interfaces), HackerRank: Java Interface, GeeksforGeeks: Adapter Pattern, CodeChef: ADAPTERDESIGN (Adapter Design Implementation)
 - **Real Life Domains**: Legacy System Integration, Third-party Library Adaptation, Cross-platform Development, API Design
 

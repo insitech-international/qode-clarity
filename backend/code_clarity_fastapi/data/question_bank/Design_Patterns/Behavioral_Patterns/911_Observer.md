@@ -5,8 +5,8 @@
 - **ID**: 911
 - **Title**: Observer Design Pattern
 - **Difficulty**: Medium
-- **Category**: Behavioral Patterns
-- **Subcategory**: Event Handling
+- **Category**: Design Patterns
+- **Subcategory**: Behavioral Patterns
 - **Similar Questions**: LeetCode: 1603. Design Parking System, HackerRank: Java Visitor Pattern, GeeksforGeeks: Implement Publisher Subscriber Model, CodeChef: SUBSCRIBE (Event Subscription System)
 - **Real Life Domains**: Event Management, GUI Applications, Stock Market Systems, Social Media Platforms
 

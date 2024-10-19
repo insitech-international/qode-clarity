@@ -8,7 +8,7 @@ const CategoryPage = () => {
   const { categoryName } = useParams();
   const [page, setPage] = useState(1);
   const { fetchQuestions } = useQuestionData();
-  const [questions, setQuestions] = useState([]);
+  const [questionsBySubcategory, setQuestionsBySubcategory] = useState({});
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,13 +16,31 @@ const CategoryPage = () => {
   const loadQuestions = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetchQuestions({ category: categoryName, page });
-      setQuestions(response.results || []);
-      setTotalCount(response.count || 0);
+      const response = await fetchQuestions({
+        category: categoryName,
+        page,
+        includeSubcategories: true,
+      });
+      console.log(`Category Detail: ${JSON.stringify(response)}`);
+
+      // Process the questions array directly from the response
+      const groupedQuestions = Array.isArray(response.questions)
+        ? response.questions.reduce((acc, question) => {
+            const subcategory = question.subcategory || "Uncategorized";
+            if (!acc[subcategory]) {
+              acc[subcategory] = [];
+            }
+            acc[subcategory].push(question);
+            return acc;
+          }, {})
+        : {};
+
+      setQuestionsBySubcategory(groupedQuestions);
+      setTotalCount(response.questions ? response.questions.length : 0);
       setError(null);
     } catch (err) {
       setError(err.message);
-      setQuestions([]);
+      setQuestionsBySubcategory({});
       setTotalCount(0);
     } finally {
       setLoading(false);
@@ -52,13 +70,14 @@ const CategoryPage = () => {
 
   return (
     <Container>
+      <Typography variant="h4" gutterBottom>
+        {categoryName} Questions
+      </Typography>
       <CategoryQuestionList
-        questions={questions}
-        category={categoryName}
-        page={page}
-        setPage={setPage}
-        perPage={10}
+        questionsBySubcategory={questionsBySubcategory}
         totalCount={totalCount}
+        onPageChange={setPage}
+        currentPage={page}
       />
     </Container>
   );

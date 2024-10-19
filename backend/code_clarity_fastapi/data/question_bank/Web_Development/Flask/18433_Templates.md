@@ -3,7 +3,7 @@
 - **ID**: 18433
 - **Title**: Flask: Templates
 - **Difficulty**: Medium
-- **Category**: Web Frameworks
+- **Category**: Web Development
 - **Subcategory**: Flask
 - **Similar Questions**: Jinja2 Templating, Frontend Integration
 - **Real Life Domains**: Web Design, Content Management, Dynamic Web Applications

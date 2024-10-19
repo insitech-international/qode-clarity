@@ -1,69 +1,80 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Modal,
-  Box,
-  Paper,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  useTheme,
-  useMediaQuery
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
-
-// Styled components
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: theme.palette.grey[100], // Light grey background
-  color: theme.palette.text.primary, // Dark text for contrast
-}));
-
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  justifyContent: 'space-between',
-}));
-
-const NavLinks = styled('nav')(({ theme }) => ({
-  display: 'flex',
-  [theme.breakpoints.down('sm')]: {
-    display: 'none',
-  },
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.text.primary,
-  marginLeft: theme.spacing(2),
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-    color: theme.palette.primary.main,
-  },
-  transition: 'background-color 0.3s, color 0.3s',
-}));
-
-const modalStyle = (theme) => ({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90%',
-  maxWidth: 800,
-  maxHeight: '90vh',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-  overflowY: 'auto',
-  [theme.breakpoints.down('sm')]: {
-    width: '95%',
-    p: 2,
-  },
-});
+  import React, { useState } from "react";
+  import { Link } from "react-router-dom";
+  import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    IconButton,
+    Modal,
+    Box,
+    Paper,
+    Divider,
+    List,
+    ListItem,
+    ListItemText,
+    useTheme,
+    useMediaQuery
+  } from "@mui/material";
+  import { styled } from "@mui/material/styles";
+  import CloseIcon from '@mui/icons-material/Close';
+  import MenuIcon from '@mui/icons-material/Menu';
+  
+  // Styled components
+  const StyledAppBar = styled(AppBar)(({ theme }) => ({
+    backgroundColor: theme.palette.grey[100],
+    color: theme.palette.text.primary,
+    boxShadow: 'none', // Remove AppBar shadow for a cleaner look
+  }));
+  
+  const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+    justifyContent: 'space-between',
+    padding: theme.spacing(2),
+  }));
+  
+  const NavLinks = styled('nav')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  }));
+  
+  const StyledButton = styled(Button)(({ theme }) => ({
+    color: theme.palette.text.primary,
+    marginLeft: theme.spacing(2),
+    padding: theme.spacing(1, 3),
+    fontWeight: 'bold',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+      color: theme.palette.primary.main,
+    },
+    transition: 'background-color 0.3s, color 0.3s',
+  }));
+  
+  const modalStyle = (theme) => ({
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '90%',
+    maxWidth: 800,
+    maxHeight: '90vh',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    overflowY: 'auto',
+    [theme.breakpoints.down('sm')]: {
+      width: '95%',
+      p: 2,
+    },
+  });
+  
+  // Color generator for subcategory headings
+  const getRandomColor = () => {
+    const colors = ['#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
 
 // bucesrContent object
 const bucesrContent = {
@@ -129,135 +140,148 @@ const bucesrContent = {
   }
 };
 
-const Header = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
-
-  const navItems = [
-    { name: "Home", path: "/" },
-    { name: "About Us", path: "/about" },
-    { name: "Contact Us", path: "/contact" },
-    { name: "BUCESR Framework", action: openModal },
-  ];
-
-  return (
-    <>
-      <StyledAppBar position="static">
-        <StyledToolbar>
-          <Typography variant="h6" component="div" color="text.primary">
-            Code Clarity
-          </Typography>
-          {isMobile ? (
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              onClick={toggleMobileMenu}
+  const Header = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
+    const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+  
+    const navItems = [
+      { name: "Home", path: "/" },
+      { name: "About Us", path: "/about" },
+      { name: "Contact Us", path: "/contact" },
+      { name: "BUCESR Framework", action: openModal },
+    ];
+  
+    return (
+      <>
+        <StyledAppBar position="static">
+          <StyledToolbar>
+          <Typography 
+              variant="h6" 
+              component="div" 
+              sx={{
+                fontWeight: 'bold',
+                color: '#1976d2', // change the color
+                backgroundColor: '#e3f2fd', // add a light background
+                padding: '8px 16px', // add some padding
+                borderRadius: '4px', // give it rounded corners
+                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // add a subtle shadow
+              }}
             >
-              <MenuIcon />
-            </IconButton>
-          ) : (
-            <NavLinks>
-              {navItems.map((item) => (
-                item.action ? (
-                  <StyledButton key={item.name} onClick={item.action}>
-                    {item.name}
-                  </StyledButton>
-                ) : (
-                  <StyledButton key={item.name} component={Link} to={item.path}>
-                    {item.name}
-                  </StyledButton>
-                )
-              ))}
-            </NavLinks>
-          )}
-        </StyledToolbar>
-      </StyledAppBar>
+              Code Clarity
+            </Typography>
 
-      {/* Mobile Menu */}
-      <Modal
-        open={mobileMenuOpen}
-        onClose={toggleMobileMenu}
-        aria-labelledby="mobile-menu-modal"
-      >
-        <Box sx={modalStyle(theme)}>
-          <IconButton
-            onClick={toggleMobileMenu}
-            sx={{ position: 'absolute', right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <List>
-            {navItems.map((item) => (
-              <ListItem
-                button
-                key={item.name}
-                onClick={() => {
-                  if (item.action) item.action();
-                  toggleMobileMenu();
-                }}
-                component={item.path ? Link : 'li'}
-                to={item.path}
+            {isMobile ? (
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                onClick={toggleMobileMenu}
               >
-                <ListItemText primary={item.name} />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Modal>
-
-      {/* BUCESR Framework Modal */}
-      <Modal
-        open={isModalOpen}
-        onClose={closeModal}
-        aria-labelledby="bucesr-modal-title"
-      >
-        <Paper elevation={24} sx={modalStyle(theme)}>
-          <IconButton
-            onClick={closeModal}
-            sx={{ position: 'absolute', right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography id="bucesr-modal-title" variant="h4" component="h2" gutterBottom>
-            BUCESR Framework
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-          When solving coding problems, it's essential to have a structured approach that can guide you through the process effectively. The BUCESR framework is designed to help you systematically tackle any coding challenge by breaking it down into manageable steps. Each letter in BUCESR represents a key part of the problem-solving process, forming a powerful mnemonic to ensure you don’t miss critical steps.
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-            "B.U.C.E.S.R." - "Be Unique, Create Easy Solutions Regularly"
-          </Typography>
-          <Divider sx={{ my: 2 }} />
-          {Object.entries(bucesrContent).map(([letter, content], index) => (
-            <Box key={letter} mt={index > 0 ? 4 : 2}>
-              <Typography variant="h5" gutterBottom>
-                <strong>{letter} - {content.title}</strong>
-              </Typography>
-              <Typography variant="body1" paragraph>
-                {content.description}
-              </Typography>
-              <List>
-                {content.questions.map((question, qIndex) => (
-                  <ListItem key={qIndex}>
-                    <ListItemText primary={`- ${question}`} />
-                  </ListItem>
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              <NavLinks>
+                {navItems.map((item) => (
+                  item.action ? (
+                    <StyledButton key={item.name} onClick={item.action}>
+                      {item.name}
+                    </StyledButton>
+                  ) : (
+                    <StyledButton key={item.name} component={Link} to={item.path}>
+                      {item.name}
+                    </StyledButton>
+                  )
                 ))}
-              </List>
-            </Box>
-          ))}
-        </Paper>
-      </Modal>
-    </>
-  );
-};
-
-
-export default Header;
+              </NavLinks>
+            )}
+          </StyledToolbar>
+        </StyledAppBar>
+  
+        {/* Mobile Menu */}
+        <Modal
+          open={mobileMenuOpen}
+          onClose={toggleMobileMenu}
+          aria-labelledby="mobile-menu-modal"
+        >
+          <Box sx={modalStyle(theme)}>
+            <IconButton
+              onClick={toggleMobileMenu}
+              sx={{ position: 'absolute', right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <List>
+              {navItems.map((item) => (
+                <ListItem
+                  button
+                  key={item.name}
+                  onClick={() => {
+                    if (item.action) item.action();
+                    toggleMobileMenu();
+                  }}
+                  component={item.path ? Link : 'li'}
+                  to={item.path}
+                >
+                  <ListItemText primary={item.name} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Modal>
+  
+        {/* BUCESR Framework Modal */}
+        <Modal
+          open={isModalOpen}
+          onClose={closeModal}
+          aria-labelledby="bucesr-modal-title"
+        >
+          <Paper elevation={24} sx={modalStyle(theme)}>
+            <IconButton
+              onClick={closeModal}
+              sx={{ position: 'absolute', right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography id="bucesr-modal-title" variant="h4" component="h2" gutterBottom>
+              BUCESR Framework
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              When solving coding problems, it's essential to have a structured approach that can guide you through the process effectively.
+            </Typography>
+            <Divider sx={{ my: 2 }} />
+            {Object.entries(bucesrContent).map(([letter, content], index) => (
+              <Box key={letter} mt={index > 0 ? 4 : 2}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  style={{ color: getRandomColor() }} // Apply random color to each subcategory heading
+                >
+                  <strong>{letter} - {content.title}</strong>
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  {content.description}
+                </Typography>
+                <List>
+                  {content.questions.map((question, qIndex) => (
+                    <ListItem key={qIndex}>
+                      <ListItemText primary={`- ${question}`} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            ))}
+          </Paper>
+        </Modal>
+      </>
+    );
+  };
+  
+  export default Header;
+  

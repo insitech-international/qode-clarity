@@ -5,8 +5,8 @@
 - **ID**: 922
 - **Title**: Singleton Design Pattern
 - **Difficulty**: Easy
-- **Category**: Creational Patterns
-- **Subcategory**: Object Creation
+- **Category**: Design Patterns
+- **Subcategory**: Creational Patterns
 - **Similar Questions**: LeetCode: 1603. Design Parking System, HackerRank: Java Singleton Pattern,GeeksforGeeks: Singleton Design Pattern, CodeChef: SINGLETONDESIGN (Singleton Design Implementation)
 - **Real Life Domains**: Database Connections, Configuration Management, Logging, Device Drivers
 
