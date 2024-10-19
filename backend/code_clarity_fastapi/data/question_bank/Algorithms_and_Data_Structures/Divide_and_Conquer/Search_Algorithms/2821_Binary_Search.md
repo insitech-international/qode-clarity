@@ -2,7 +2,7 @@
 
 # Metadata
 
-- **ID**: 2721
+- **ID**: 2821
 - **Title**: Binary Search: Efficient Search in Sorted Arrays
 - **Difficulty**: Easy
 - **Category**: Divide and Conquer

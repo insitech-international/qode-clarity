@@ -1,6 +1,6 @@
 # Metadata
 
-- **ID**: 8109
+- **ID**: 2824
 - **Title**: Interpolation Search: Efficient Search for Uniformly Distributed Sorted Data
 - **Difficulty**: Medium
 - **Category**: Searching Algorithms
