@@ -1,6 +1,6 @@
 # Metadata
 
-- **ID**: 2682
+- **ID**: 2652
 - **Title**: Advanced String Operations: Practical Applications
 - **Difficulty**: Medium
 - **Category**: Data Structures

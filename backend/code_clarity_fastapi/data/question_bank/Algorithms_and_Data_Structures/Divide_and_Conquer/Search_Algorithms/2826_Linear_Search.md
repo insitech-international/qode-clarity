@@ -1,6 +1,6 @@
 # Metadata
 
-- **ID**: 8112
+- **ID**: 2826
 - **Title**: Linear Search: Simple Sequential Search Algorithm
 - **Difficulty**: Easy
 - **Category**: Searching Algorithms

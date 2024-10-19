@@ -7,10 +7,7 @@
 - **Difficulty**: Hard
 - **Category**: Backtracking
 - **Subcategory**: Grid Backtracking
-- **Similar Questions**: 
-  - LeetCode: 37. Sudoku Solver
-  - HackerRank: Solve Me First
-  - CodeForces: Sudoku
+- **Similar Questions**: LeetCode: 37. Sudoku Solver, HackerRank: Solve Me First, CodeForces: Sudoku
 - **Real Life Domains**: Puzzle Games, Constraint Programming, Scheduling
 
 # Problem Description
