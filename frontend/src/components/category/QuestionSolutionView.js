@@ -153,6 +153,13 @@ const SolutionCard = ({ solution, tabValue, handleTabChange }) => {
         "This section justifies the categorization of this problem, discussing how this classification influences our solution approach.",
     },
     {
+      label: "BUCESR Framework",
+      content: solution.bucesr_framework,
+      isCode: true,
+      description:
+        "This section presents a detailed Python implementation of the approach, with explanations of key functions and their roles in solving the problem.",
+    },
+    {
       label: "Pythonic Implementation",
       content: solution.pythonic_implementation,
       isCode: true,
@@ -182,6 +189,13 @@ const SolutionCard = ({ solution, tabValue, handleTabChange }) => {
       content: solution.visual_representation,
       description:
         "This section offers a graphical depiction of the data structure or algorithm, illustrating how it efficiently manages data for our specific problem.",
+    },
+    {
+      label: "Complexity Analysis",
+      content: solution.complexity_analysis,
+      isCode: true,
+      description:
+        "This section presents a detailed Time and Space Complexicity Analysis with a further note on possible trade-offs.",
     },
   ];
 

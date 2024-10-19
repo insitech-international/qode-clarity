@@ -48,13 +48,15 @@ class SolutionSchema(BaseModel):
     question_id: int
     category: Optional[str] = ""
     subcategory: Optional[str] = ""
-    classification_rationale: Optional[str] = ""
     introduction: Optional[str] = ""
-    mathematical_abstraction: Optional[str] = ""
+    classification_rationale: Optional[str] = ""
     pythonic_implementation: Optional[str] = ""
+    bucesr_framework: Optional[str] = ""
+    mathematical_abstraction: Optional[str] = ""
     real_world_analogies: Optional[str] = ""
     storytelling_approach: Optional[str] = ""
     visual_representation: Optional[str] = ""
+    complexity_analysis: Optional[str] = ""
     content: Optional[str] = ""
 
 class CategorySchema(BaseModel):
