@@ -5,8 +5,8 @@
 - **ID**: 23431
 - **Title**: Closest Pair of Points
 - **Difficulty**: Medium to Hard
-- **Category**: Computational Geometry, Divide and Conquer
-- **Subcategory**: Proximity Problems
+- **Category**: Advanced Data Structures
+- **Subcategory**: Computational Geometry
 - **Similar Questions**: LeetCode: 973. K Closest Points to Origin, HackerRank: Closest Numbers, SPOJ: CLOPPAIR
 - **Real Life Domains**: Geographic Information Systems (GIS), Computer Graphics, Collision Detection, Cluster Analysis
 

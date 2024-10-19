@@ -147,6 +147,8 @@ class FileManager:
             "introduction": sections.get('introduction', ''),
             "mathematical_abstraction": sections.get('mathematical_abstraction', ''),
             "pythonic_implementation": sections.get('pythonic_implementation', ''),
+            "bucesr_framework": sections.get('bucesr_framework', ''),
+            "complexity_analysis": sections.get('complexity_analysis', ''),
             "real_world_analogies": sections.get('real_world_analogies', ''),
             "storytelling_approach": sections.get('storytelling_approach', ''),
             "visual_representation": sections.get('visual_representation', ''),
