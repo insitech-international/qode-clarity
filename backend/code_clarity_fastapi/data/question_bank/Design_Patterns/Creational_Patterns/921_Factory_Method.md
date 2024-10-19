@@ -5,13 +5,9 @@
 - **ID**: 921
 - **Title**: Factory Method Design Pattern
 - **Difficulty**: Medium
-- **Category**: Creational Patterns
-- **Subcategory**: Object Creation
-- **Similar Questions**: 
-  - LeetCode: 355. Design Twitter
-  - HackerRank: Java Factory Pattern
-  - GeeksforGeeks: Factory Method Design Pattern
-  - CodeChef: FACTORY (Factory Design Problem)
+- **Category**: Design Patterns
+- **Subcategory**: Creational Patterns
+- **Similar Questions**: LeetCode: 355. Design Twitter, HackerRank: Java Factory Pattern, GeeksforGeeks: Factory Method Design Pattern, CodeChef: FACTORY (Factory Design Problem)
 - **Real Life Domains**: GUI Libraries, Database Connectors, Game Character Creation, Document Generation
 
 # Problem Description

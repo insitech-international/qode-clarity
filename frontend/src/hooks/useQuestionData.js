@@ -1,4 +1,3 @@
-// hooks/useQuestionData.js
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
@@ -14,7 +13,7 @@ const fetchData = async (url, params) => {
     return response.data;
   } catch (error) {
     console.error("API Error:", error);
-    throw new Error(error.response?.data?.error || "An error occurred");
+    throw new Error(error.response?.data?.detail || "An error occurred");
   }
 };
 
@@ -28,19 +27,7 @@ export const useCategories = () => {
       setLoading(true);
       try {
         const data = await fetchData("/categories/");
-        if (Array.isArray(data)) {
-          const extractedCategories = data
-            .filter((category) => category !== "") // Remove empty categories
-            .map((category) => ({
-              name: category,
-              count: 0, // We don't have this information in the current response
-              diagramPath: "", // We don't have this information in the current response
-              questions: [], // We don't have this information in the current response
-            }));
-          setCategories(extractedCategories);
-        } else {
-          throw new Error("Invalid data structure received from API");
-        }
+        setCategories(data);
       } catch (err) {
         console.error("Error fetching categories:", err);
         setError(err.message);
@@ -66,20 +53,24 @@ export const useQuestionData = () => {
     setError(null);
     try {
       const data = await fetchData("/questions/", params);
-      setQuestions(data.results || []);
-      return data.results || [];
+      setQuestions(data.questions || []);
+      return {
+        questions: data.questions || [],
+        total: data.total,
+        skip: data.skip,
+        limit: data.limit
+      };
     } catch (err) {
       console.error("Error fetching questions:", err);
       setError("Failed to fetch questions. Please try again later.");
-      return [];
+      return { questions: [], total: 0, skip: 0, limit: 0 };
     } finally {
       setLoading(false);
     }
   }, []);
 
   const fetchQuestionDetails = useCallback(async (questionId) => {
-    const data = await fetchData(`/questions/${questionId}/`);
-    return data;
+    return await fetchData(`/questions/${questionId}/`);
   }, []);
 
   const fetchSolution = useCallback(async (questionId) => {
@@ -92,32 +83,33 @@ export const useQuestionData = () => {
 
     try {
       const data = await fetchData("/featured_questions/");
-      const categorizedQuestions = {};
-
-      // Check if data is an array
-      if (Array.isArray(data)) {
-        data.forEach((question) => {
-          if (!categorizedQuestions[question.category]) {
-            categorizedQuestions[question.category] = [];
-          }
-          if (categorizedQuestions[question.category].length < 6) {
-            categorizedQuestions[question.category].push(question);
-          }
-        });
-      } else {
-        // If data is not an array, it might be an object with categories as keys
-        Object.entries(data).forEach(([category, questions]) => {
-          categorizedQuestions[category] = questions.slice(0, 6);
-        });
-      }
-
-      return categorizedQuestions;
+      return data;
     } catch (err) {
       console.error("Error fetching featured questions:", err);
       setError("Failed to fetch featured questions. Please try again later.");
       return {};
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const testDbConnection = useCallback(async () => {
+    try {
+      const data = await fetchData("/test-db-connection");
+      return data;
+    } catch (err) {
+      console.error("Error testing DB connection:", err);
+      throw new Error("Failed to test DB connection");
+    }
+  }, []);
+
+  const triggerDatabaseUpdate = useCallback(async () => {
+    try {
+      const data = await api.post("/update-database");
+      return data.data;
+    } catch (err) {
+      console.error("Error triggering database update:", err);
+      throw new Error("Failed to trigger database update");
     }
   }, []);
 
@@ -129,5 +121,7 @@ export const useQuestionData = () => {
     fetchQuestionDetails,
     fetchSolution,
     fetchFeaturedQuestions,
+    testDbConnection,
+    triggerDatabaseUpdate
   };
 };

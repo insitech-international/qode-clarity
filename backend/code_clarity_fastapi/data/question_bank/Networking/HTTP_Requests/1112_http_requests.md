@@ -6,7 +6,7 @@
 - **Title**: HTTP Requests: Efficient Web Communication
 - **Difficulty**: Easy
 - **Category**: Networking
-- **Subcategory**: Web Communication
+- **Subcategory**: Http Requests
 - **Similar Topics**: RESTful APIs, WebSockets, GraphQL
 - **Real Life Domains**: Web Development, Mobile App Development, IoT, Microservices
 

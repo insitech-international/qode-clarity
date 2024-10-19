@@ -7,8 +7,7 @@
 - **Difficulty**: Medium
 - **Category**: Exception Handling
 - **Subcategory**: Resource Management
-- **Similar Questions**: 
-  - LeetCode: 1672. Richest Customer Wealth (conceptually similar in terms of managing nested structures), HackerRank: Exceptions, GeeksforGeeks: Context Managers in Python, CodeChef: CONTEXTMANAGER (Context Manager Implementation)
+- **Similar Questions**: LeetCode: 1672. Richest Customer Wealth (conceptually similar in terms of managing nested structures), HackerRank: Exceptions, GeeksforGeeks: Context Managers in Python, CodeChef: CONTEXTMANAGER (Context Manager Implementation)
 - **Real Life Domains**: Database Connections, File I/O, Network Operations, Multi-threaded Applications, Distributed Systems
 
 # Problem Description

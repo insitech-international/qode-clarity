@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AppBar, Toolbar, Container, Box, Modal, Typography, Button, CircularProgress, TextField, MenuItem } from "@mui/material";
+import { AppBar, Toolbar, Container, Box, Modal, Typography, Button, CircularProgress, TextField, MenuItem, IconButton, InputAdornment } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import CloseIcon from '@mui/icons-material/Close';
+import ClearIcon from '@mui/icons-material/Clear';
 import { useQuestionData } from "../../hooks/useQuestionData";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
@@ -13,11 +15,28 @@ const ModalContent = styled(Box)(({ theme }) => ({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: '90%',
+  maxWidth: 500,
   backgroundColor: theme.palette.background.paper,
   boxShadow: theme.shadows[24],
   padding: theme.spacing(4),
   borderRadius: theme.shape.borderRadius,
+  outline: 0,
+}));
+
+const SearchBar = styled(TextField)(({ theme }) => ({
+  backgroundColor: 'white',
+  borderRadius: theme.shape.borderRadius,
+  width: '100%',
+  [`& fieldset`]: {
+    borderColor: theme.palette.primary.light,
+  },
+  [`&:hover fieldset`]: {
+    borderColor: theme.palette.primary.main,
+  },
+  [`&.Mui-focused fieldset`]: {
+    borderColor: theme.palette.primary.dark,
+  },
 }));
 
 // Function to extract categories and subcategories from the file structure
@@ -102,15 +121,17 @@ const Navbar = () => {
 
     setLoading(true);
     try {
-      const results = await fetchQuestions({ search: searchTerm, ...filters });
-      setSearchResults(results);
-      setError(null);
+        const results = await fetchQuestions({ search: searchTerm, ...filters });
+        console.log('Search Results:', results); // Debugging
+        setSearchResults(Array.isArray(results) ? results : []); // Ensure results is always an array
+        setError(null);
     } catch (err) {
-      setError(err.message);
+        setError(err.message);
+        setSearchResults([]); // Reset results on error
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  }, [searchTerm, filters, searchParams, navigate, fetchQuestions]);
+}, [searchTerm, filters, searchParams, navigate, fetchQuestions]);
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prevFilters => ({
@@ -141,13 +162,25 @@ const Navbar = () => {
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <TextField
+              <SearchBar
                 variant="outlined"
                 placeholder="Search questions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
-                sx={{ width: '50%', backgroundColor: 'white', borderRadius: 1 }}
+                InputProps={{
+                  endAdornment: searchTerm && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setSearchTerm("")}
+                        edge="end"
+                        size="small"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Box>
           </Toolbar>
@@ -156,9 +189,15 @@ const Navbar = () => {
 
       <Modal open={isModalOpen} onClose={handleCloseModal} aria-labelledby="search-modal">
         <ModalContent>
-          <Typography id="search-modal" variant="h6" component="h2" gutterBottom>
-            Search Results
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography id="search-modal" variant="h6" component="h2">
+              Search Results
+            </Typography>
+            <IconButton onClick={handleCloseModal}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
           <Box sx={{ mb: 2 }}>
             <TextField
               select
@@ -173,6 +212,8 @@ const Navbar = () => {
               <MenuItem value="hard">Hard</MenuItem>
             </TextField>
           </Box>
+
+          {/* Categories filter */}
           <Box sx={{ mb: 2 }}>
             <TextField
               select
@@ -189,6 +230,8 @@ const Navbar = () => {
               ))}
             </TextField>
           </Box>
+
+          {/* Subcategories filter */}
           <Box sx={{ mb: 2 }}>
             <TextField
               select
@@ -199,25 +242,42 @@ const Navbar = () => {
               disabled={!filters.category}
             >
               <MenuItem value="">All</MenuItem>
-              {filters.category && subcategories[filters.category] && subcategories[filters.category].map((subcategory) => (
+              {filters.category && subcategories[filters.category]?.map((subcategory) => (
                 <MenuItem key={subcategory} value={subcategory}>
                   {subcategory.replace(/_/g, ' ')}
                 </MenuItem>
               ))}
             </TextField>
           </Box>
+
+          {/* Apply button */}
           <Button onClick={handleSearch} variant="contained" color="primary" fullWidth>
             Apply Filters
           </Button>
-          {loading && <CircularProgress />}
+
+          {/* Loading spinner */}
+          {loading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <CircularProgress />
+            </Box>
+          )}
+
+          {/* Error message */}
           {error && <Typography color="error">Error: {error}</Typography>}
-          {!loading && searchResults.length === 0 && (
+
+          {/* No results message */}
+          {!loading && !error && searchResults.length === 0 && (
             <Typography>No results found.</Typography>
           )}
+
+          {/* Search results */}
           {!loading && searchResults.map((question) => (
             <Typography key={question.id}>{question.title}</Typography>
           ))}
-          <Button onClick={handleCloseModal} sx={{ mt: 2 }}>Close</Button>
+
+          <Button onClick={handleCloseModal} sx={{ mt: 2 }} fullWidth>
+            Close
+          </Button>
         </ModalContent>
       </Modal>
     </>

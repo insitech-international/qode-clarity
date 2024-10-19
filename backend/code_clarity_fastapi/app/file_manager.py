@@ -92,8 +92,8 @@ class FileManager:
 
     @staticmethod
     def extract_id_from_filename(file_name: str) -> int:
-        match = re.search(r'^(\d+)', file_name)   
-        return int(match.group(1)) if match else 0
+        match = re.search(r'^(\d+)', file_name)
+        return int(match.group(0)) if match else 0
 
     @staticmethod
     def parse_problem_versions(versions_content: str) -> List[str]:
@@ -114,9 +114,10 @@ class FileManager:
         question_id = FileManager.extract_id_from_filename(file_name)
 
         metadata = FileManager.parse_metadata(sections.get('metadata', ''))
-        
+        logger.info(f"MetaData: {metadata}")
         question_data = {
-            "question_id": question_id,
+            # "question_id": question_id,
+            "question_id": metadata.get('id', question_id),
             "title": metadata.get('title', ''),
             "difficulty": metadata.get('difficulty', ''),
             "category": metadata.get('category', ''),

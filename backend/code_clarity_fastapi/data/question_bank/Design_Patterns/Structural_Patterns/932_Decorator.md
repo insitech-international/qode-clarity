@@ -5,8 +5,8 @@
 - **ID**: 932
 - **Title**: Decorator Design Pattern
 - **Difficulty**: Medium
-- **Category**: Structural Patterns
-- **Subcategory**: Object Enhancement
+- **Category**: Design Patterns
+- **Subcategory**: Structural Patterns
 - **Similar Questions**: LeetCode: 303. Range Sum Query - Immutable (conceptually similar in terms of adding functionality)
 - **Real Life Domains**: GUI Component Enhancement, Data Stream Processing, Web Service Middleware, Game Character Customization
 
