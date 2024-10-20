@@ -70,7 +70,9 @@ export const useQuestionData = () => {
   }, []);
 
   const fetchQuestionDetails = useCallback(async (questionId) => {
-    return await fetchData(`/questions/${questionId}/`);
+    const data = await fetchData(`/questions/${questionId}/`);
+    console.log(`Data: ${JSON.stringify(data)}`);
+    return data;
   }, []);
 
   const fetchSolution = useCallback(async (questionId) => {

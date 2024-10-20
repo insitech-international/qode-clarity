@@ -6,12 +6,18 @@ import {
   CircularProgress, 
   Paper,
   Grid,
-  useTheme
+  useTheme,
+  Card,
+  CardContent,
+  CardHeader,
+  Alert,
+  AlertTitle
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import CategoryCarousel from "../components/category/CategoryCarousel";
 import FeaturedQuestions from "../components/common/FeaturedQuestions";
 import { useQuestionData, useCategories } from "../hooks/useQuestionData";
+import BucesrCarousel from "../components/common/BucesrCarousel";
 
 const HomePage = () => {
   const [featuredQuestions, setFeaturedQuestions] = useState([]);
@@ -22,12 +28,13 @@ const HomePage = () => {
   const theme = useTheme();
 
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+  
   const phrases = [
-    { text: "Pythonic Implementation", color: "#FF9800" }, // Orange
-    { text: "Mathematical Abstraction", color: "#00BCD4" }, // Cyan
-    { text: "Real-World Analogies", color: "#FFEB3B" }, // Yellow
-    { text: "Storytelling Approach", color: "#8BC34A" }, // Light Green
-    { text: "Visual Representation", color: "#B39DDB" } // Red
+    { text: "Pythonic Implementation", color: "#FF9800" },
+    { text: "Mathematical Abstraction", color: "#00BCD4" },
+    { text: "Real-World Analogies", color: "#FFEB3B" },
+    { text: "Storytelling Approach", color: "#8BC34A" },
+    { text: "Visual Representation", color: "#B39DDB" }
   ];
 
   const typewriterVariants = {
@@ -72,27 +79,30 @@ const HomePage = () => {
 
   if (error || categoriesError) return (
     <Container>
-      <Typography color="error" variant="h6">Error: {error || categoriesError}</Typography>
+      <Alert severity="error">
+        <AlertTitle>Error</AlertTitle>
+        {error || categoriesError}
+      </Alert>
     </Container>
   );
 
   return (
-    <Box>
+    <Box sx={{ bgcolor: 'grey.50', minHeight: '100vh' }}>
       <Paper 
         elevation={0}
         sx={{
-          bgcolor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
+          background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          color: 'white',
           py: 8,
           mb: 4
         }}
       >
         <Container maxWidth="lg">
-          <Typography variant="h2" component="h1" gutterBottom align="center">
+          <Typography variant="h2" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
             Code Clarity: The 5 How Approach
           </Typography>
           <Typography variant="body1" align="center" paragraph>
-            Code to the Top by solving complex algorithmic and data structure challenges using the 5 How method:
+            Master complex algorithmic and data structure challenges using BUCESR Framework and the '5 How Approach':
           </Typography>
           <Box height="60px" display="flex" justifyContent="center" alignItems="center">
             <AnimatePresence mode="wait">
@@ -119,10 +129,31 @@ const HomePage = () => {
       <Container maxWidth="lg">
         <Grid container spacing={4}>
           <Grid item xs={12}>
-            <CategoryCarousel categories={categories} />
+            <Card>
+              <CardHeader title="Categories" />
+              <CardContent>
+                <CategoryCarousel categories={categories} />
+              </CardContent>
+            </Card>
           </Grid>
           <Grid item xs={12}>
-            <FeaturedQuestions questions={featuredQuestions} />
+            <Card>
+              <CardHeader title="BUCESR Framework" />
+              <CardContent>
+                <Typography variant="body1" paragraph>
+                  The BUCESR (<i>Be Unique, Create Easy Solutions Regulary</i>) Framework is a systematic approach to break down and solve complex problems efficiently.
+                </Typography>
+                <BucesrCarousel />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Featured Questions" />
+              <CardContent>
+                <FeaturedQuestions questions={featuredQuestions} />
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </Container>
@@ -131,3 +162,6 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
+

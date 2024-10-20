@@ -9,9 +9,10 @@ import {
   Box,
   Typography,
   Button,
+  Paper,
+  Chip,
 } from "@mui/material";
 
-// Array of colors to alternate for subcategory headings
 const headingColors = [
   "#1E88E5",
   "#43A047",
@@ -31,7 +32,6 @@ const CategoryQuestionList = ({
 }) => {
   const totalPages = Math.ceil(totalCount / perPage);
 
-  // Helper to get a color based on index
   const getHeadingColor = (index) =>
     headingColors[index % headingColors.length];
 
@@ -41,28 +41,48 @@ const CategoryQuestionList = ({
       sx={{
         display: "flex",
         justifyContent: "space-between",
-        paddingY: 1.5,
+        alignItems: "center",
+        paddingY: 2,
         "&:hover": {
           backgroundColor: "rgba(0, 0, 0, 0.04)",
         },
       }}
     >
       <ListItemText
-        primary={question.title || question.content.split("\n")[0]} // Fallback to first line of content
+        primary={question.title || question.content.split("\n")[0]}
         primaryTypographyProps={{
-          variant: "h6",
+          variant: "subtitle1",
           sx: {
-            textDecoration: "none",
-            color: "inherit",
+            fontWeight: "medium",
           },
         }}
+        secondary={
+          <Box sx={{ display: "flex", mt: 1 }}>
+            <Chip
+              label={question.difficulty || "N/A"}
+              size="small"
+              color={
+                question.difficulty === "Hard"
+                  ? "error"
+                  : question.difficulty === "Medium"
+                  ? "warning"
+                  : "success"
+              }
+              sx={{ mr: 1 }}
+            />
+            {question.tags &&
+              question.tags.map((tag, index) => (
+                <Chip key={index} label={tag} size="small" sx={{ mr: 1 }} />
+              ))}
+          </Box>
+        }
       />
       <Button
         component={Link}
         to={`/question/${question.question_id}`}
         variant="outlined"
         size="small"
-        sx={{ marginLeft: 2 }}
+        sx={{ ml: 2, whiteSpace: "nowrap" }}
       >
         View Details
       </Button>
@@ -71,27 +91,36 @@ const CategoryQuestionList = ({
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ fontWeight: "bold", color: "primary.main" }}
+      >
         {category
           ? `${category.replace(/_/g, " ")} Questions (${totalCount})`
-          : `Number of Questions: ${totalCount}`}
+          : `All Questions (${totalCount})`}
       </Typography>
 
       {Object.entries(questionsBySubcategory).map(
         ([subcategory, questions], index) => (
-          <Box key={subcategory} mb={4}>
+          <Paper
+            key={subcategory}
+            elevation={3}
+            sx={{ mb: 4, overflow: "hidden" }}
+          >
             <Typography
               variant="h5"
-              gutterBottom
-              sx={{ color: getHeadingColor(index) }} // Assign color based on index
+              sx={{
+                color: getHeadingColor(index),
+                backgroundColor: "rgba(0, 0, 0, 0.03)",
+                p: 2,
+                fontWeight: "medium",
+              }}
             >
               {subcategory}
             </Typography>
-            <List disablePadding>
-              {questions.map(renderQuestion)}
-              <Divider />
-            </List>
-          </Box>
+            <List disablePadding>{questions.map(renderQuestion)}</List>
+          </Paper>
         )
       )}
 
