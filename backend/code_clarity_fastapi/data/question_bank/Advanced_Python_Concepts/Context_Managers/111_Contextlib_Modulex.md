@@ -21,17 +21,18 @@ By using context managers, you can focus on the core task at hand (cooking, serv
 
 # Versions
 
-## Version 1. File Operations Scenario
+## Version 1: File Operations Scenario
 
 Imagine you're developing a document management system for a large corporation. The system needs to handle thousands of documents daily, including confidential reports, contracts, and employee records. Your task is to design a module that can efficiently read and write these documents while ensuring:
 
-Documents are properly locked to prevent concurrent modifications
-All changes are logged for auditing purposes
-Files are compressed to save storage space
-Access control is enforced based on user permissions
+- Documents are properly locked to prevent concurrent modifications
+- All changes are logged for auditing purposes
+- Files are compressed to save storage space
+- Access control is enforced based on user permissions
+
 You need to implement a context manager that handles these requirements seamlessly, ensuring that files are always closed and unlocked after operations, even if an exception occurs during processing.
 
-## Version 2. Database Transactions Scenario
+## Version 2: Database Transactions Scenario
 
 Picture a high-volume e-commerce platform that processes millions of transactions per day. Your responsibility is to develop a module that handles order processing, including:
 
@@ -39,9 +40,10 @@ Creating new orders
 Updating inventory levels
 Managing customer balances
 Logging transaction history
+
 You need to implement a context manager that ensures all these operations are treated as a single atomic unit. If any part of the transaction fails, everything should be rolled back to maintain data integrity. The context manager should also handle database connections efficiently, ensuring they are properly closed after each transaction.
 
-## Version 3. Secure Payment Processing Scenario
+## Version 3: Secure Payment Processing Scenario
 
 Envision a payment gateway service that needs to securely process credit card transactions. Your task is to design a system that:
 
@@ -52,7 +54,7 @@ Generates a secure transaction ID
 Logs the transaction securely
 You need to create a custom context manager that handles the entire payment processing workflow. It should ensure that all sensitive information is properly encrypted throughout the process and that resources are cleaned up even if an exception occurs during payment processing.
 
-## Version 4. Temperature Monitoring Scenario
+## Version 4: Temperature Monitoring Scenario
 
 Imagine you're developing an environmental monitoring system for a large server room. The system needs to continuously monitor temperature levels and alert administrators if they exceed safe thresholds. Your responsibility is to design a module that:
 
@@ -88,7 +90,6 @@ You need to implement a context manager that manages the connection to the tempe
 
 # Notes
 
-```
 Key Notes About Contextlib Managers:
 
 - Automatic Resource Management: Contextlib managers ensure that resources are properly allocated and released, reducing the risk of resource leaks.
@@ -108,4 +109,3 @@ Key Notes About Contextlib Managers:
 - The contextlib.contextmanager decorator is used to define generator-based context managers.
 - The contextlib.ContextDecorator base class provides a foundation for creating context managers that work with the @contextmanager decorator.
 - The contextlib.suppress() function allows suppressing specific exceptions within a context manager.
-```

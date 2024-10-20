@@ -2,7 +2,7 @@
 
 # Metadata
 
-- **ID**: 721
+- **ID**: 21221
 - **Title**: Investment Portfolio Optimization
 - **Difficulty**: Easy
 - **Category**: Greedy Algorithms
@@ -224,14 +224,14 @@ Mathematical formulation:
 
 Maximize V subject to:
 
-Σ P_i _ x_i = V
-Σ W_i _ x_i ≤ W
+Σ P*i * x*i = V
+Σ W_i * x_i ≤ W
 0 ≤ x_i ≤ 1 for all i
 Where x_i represents the fraction of the i-th item to be included.
 
 Solution steps:
 
-Sort the items based on their profit-to-weight ratio (P_i / W_i) in descending order.
+Sort the items based on their profit-to-weight ratio (P*i / W_i) in descending order.
 Initialize variables:
 V = 0
 Remaining capacity = W
@@ -239,13 +239,13 @@ Iterate through the sorted items:
 For each item i: a. If the entire item fits in the remaining capacity:
 Add the entire item: V += P_i, Remaining capacity -= W_i b. Otherwise:
 Calculate the fraction of the item to include: f = min(Remaining capacity / W_i, 1)
-Add the fraction of the item: V += P_i _ f, Remaining capacity -= W_i _ f
+Add the fraction of the item: V += P_i * f, Remaining capacity -= W*i * f
 Return the total value V.
 Mathematical representation:
 
 Let S be the set of selected items. Then:
 
-V(S) = Σ P_i _ x_i where x_i = 1 if item i is fully included, otherwise x_i = (W_i _ x_i) / W
+V(S) = Σ P*i * x*i where x_i = 1 if item i is fully included, otherwise x_i = (W_i * x_i) / W
 
 The optimal solution is achieved by iteratively applying this formula, starting with an empty set and adding items one by one until the knapsack is full or all items are considered.
 

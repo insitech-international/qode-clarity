@@ -1,28 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AppBar, Toolbar, Container, Box, Modal, Typography, Button, CircularProgress, TextField, MenuItem, IconButton, InputAdornment } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { AppBar, Toolbar, Container, Box, Modal, Typography, Button, CircularProgress, TextField, MenuItem, IconButton, InputAdornment, Chip } from "@mui/material";
+import { styled, alpha } from "@mui/material/styles";
+import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useQuestionData } from "../../hooks/useQuestionData";
-
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.dark,
-}));
-
-const ModalContent = styled(Box)(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '90%',
-  maxWidth: 500,
-  backgroundColor: theme.palette.background.paper,
-  boxShadow: theme.shadows[24],
-  padding: theme.spacing(4),
-  borderRadius: theme.shape.borderRadius,
-  outline: 0,
-}));
 
 const SearchBar = styled(TextField)(({ theme }) => ({
   backgroundColor: 'white',
@@ -36,6 +19,65 @@ const SearchBar = styled(TextField)(({ theme }) => ({
   },
   [`&.Mui-focused fieldset`]: {
     borderColor: theme.palette.primary.dark,
+  },
+}));
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+}));
+
+const ModalContent = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90%',
+  maxWidth: 600,
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shadows[24],
+  padding: theme.spacing(4),
+  borderRadius: theme.shape.borderRadius,
+  outline: 0,
+}));
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(3),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(TextField)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '40ch',
+    },
   },
 }));
 
@@ -160,10 +202,12 @@ const Navbar = () => {
     <>
       <StyledAppBar position="static">
         <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <SearchBar
-                variant="outlined"
+          <Toolbar disableGutters sx={{ justifyContent: 'center' }}>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
                 placeholder="Search questions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -182,15 +226,16 @@ const Navbar = () => {
                   ),
                 }}
               />
-            </Box>
+            </Search>
+            <Button color="inherit" onClick={handleSearch}>Search</Button>
           </Toolbar>
         </Container>
       </StyledAppBar>
 
       <Modal open={isModalOpen} onClose={handleCloseModal} aria-labelledby="search-modal">
         <ModalContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography id="search-modal" variant="h6" component="h2">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography id="search-modal" variant="h5" component="h2">
               Search Results
             </Typography>
             <IconButton onClick={handleCloseModal}>
@@ -198,29 +243,26 @@ const Navbar = () => {
             </IconButton>
           </Box>
 
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
             <TextField
               select
               label="Difficulty"
               value={filters.difficulty}
               onChange={(e) => handleFilterChange('difficulty', e.target.value)}
-              fullWidth
+              sx={{ minWidth: 120 }}
             >
               <MenuItem value="">All</MenuItem>
               <MenuItem value="easy">Easy</MenuItem>
               <MenuItem value="medium">Medium</MenuItem>
               <MenuItem value="hard">Hard</MenuItem>
             </TextField>
-          </Box>
 
-          {/* Categories filter */}
-          <Box sx={{ mb: 2 }}>
             <TextField
               select
               label="Category"
               value={filters.category}
               onChange={(e) => handleFilterChange('category', e.target.value)}
-              fullWidth
+              sx={{ minWidth: 200 }}
             >
               <MenuItem value="">All</MenuItem>
               {categories.map((category) => (
@@ -229,55 +271,49 @@ const Navbar = () => {
                 </MenuItem>
               ))}
             </TextField>
+
+            {filters.category && (
+              <TextField
+                select
+                label="Subcategory"
+                value={filters.subcategory}
+                onChange={(e) => handleFilterChange('subcategory', e.target.value)}
+                sx={{ minWidth: 200 }}
+              >
+                <MenuItem value="">All</MenuItem>
+                {subcategories[filters.category]?.map((subcategory) => (
+                  <MenuItem key={subcategory} value={subcategory}>
+                    {subcategory.replace(/_/g, ' ')}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
           </Box>
 
-          {/* Subcategories filter */}
-          <Box sx={{ mb: 2 }}>
-            <TextField
-              select
-              label="Subcategory"
-              value={filters.subcategory}
-              onChange={(e) => handleFilterChange('subcategory', e.target.value)}
-              fullWidth
-              disabled={!filters.category}
-            >
-              <MenuItem value="">All</MenuItem>
-              {filters.category && subcategories[filters.category]?.map((subcategory) => (
-                <MenuItem key={subcategory} value={subcategory}>
-                  {subcategory.replace(/_/g, ' ')}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-
-          {/* Apply button */}
-          <Button onClick={handleSearch} variant="contained" color="primary" fullWidth>
+          <Button onClick={handleSearch} variant="contained" color="primary" fullWidth sx={{ mb: 2 }}>
             Apply Filters
           </Button>
 
-          {/* Loading spinner */}
           {loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
               <CircularProgress />
             </Box>
           )}
 
-          {/* Error message */}
-          {error && <Typography color="error">Error: {error}</Typography>}
+          {error && <Typography color="error" sx={{ mb: 2 }}>Error: {error}</Typography>}
 
-          {/* No results message */}
           {!loading && !error && searchResults.length === 0 && (
-            <Typography>No results found.</Typography>
+            <Typography sx={{ mb: 2 }}>No results found.</Typography>
           )}
 
-          {/* Search results */}
           {!loading && searchResults.map((question) => (
-            <Typography key={question.id}>{question.title}</Typography>
+            <Chip
+              key={question.id}
+              label={question.title}
+              onClick={() => navigate(`/question/${question.id}`)}
+              sx={{ m: 0.5 }}
+            />
           ))}
-
-          <Button onClick={handleCloseModal} sx={{ mt: 2 }} fullWidth>
-            Close
-          </Button>
         </ModalContent>
       </Modal>
     </>
