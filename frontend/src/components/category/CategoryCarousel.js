@@ -2,23 +2,74 @@ import React from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Link } from "react-router-dom";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Import icons
 
-const CarouselWrapper = ({ children }) => (
-  <div className="mb-12 max-w-[80vw] mx-auto">
-    <Carousel
-      showArrows={false}
-      showStatus={false}
-      showThumbs={false}
-      infiniteLoop={true}
-      autoPlay={true}
-      interval={5000}
-      showIndicators={true}
-      centerMode={false}
-    >
-      {children}
-    </Carousel>
-  </div>
-);
+const CarouselWrapper = ({ children }) => {
+  const dotColors = [
+    "bg-blue-500",
+    "bg-green-500",
+    "bg-red-500",
+    "bg-yellow-500",
+    "bg-purple-500",
+  ];
+
+  return (
+    <div className="mb-12 max-w-[80vw] mx-auto">
+      <Carousel
+        showArrows={true}
+        showStatus={true}
+        showThumbs={false}
+        infiniteLoop={true}
+        autoPlay={true}
+        interval={5000}
+        showIndicators={false}
+        centerMode={false}
+        renderArrowPrev={(onClickHandler, hasPrev) =>
+          hasPrev && (
+            <button
+              type="button"
+              onClick={onClickHandler}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-blue-500 rounded-full text-white hover:bg-blue-600"
+            >
+              <FaArrowLeft size={20} />
+            </button>
+          )
+        }
+        renderArrowNext={(onClickHandler, hasNext) =>
+          hasNext && (
+            <button
+              type="button"
+              onClick={onClickHandler}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-blue-500 rounded-full text-white hover:bg-blue-600"
+            >
+              <FaArrowRight size={20} />
+            </button>
+          )
+        }
+        renderIndicator={(onClickHandler, isSelected, index, label) => {
+          const colorClass = dotColors[index % dotColors.length];
+          return (
+            <li
+              className={`inline-block mx-1 w-3 h-3 rounded-full cursor-pointer ${colorClass} ${
+                isSelected ? "opacity-100" : "opacity-50"
+              }`}
+              onClick={onClickHandler}
+              onKeyDown={onClickHandler}
+              value={index}
+              key={index}
+              role="button"
+              tabIndex={0}
+              title={`${label} ${index + 1}`}
+              aria-label={`${label} ${index + 1}`}
+            />
+          );
+        }}
+      >
+        {children}
+      </Carousel>
+    </div>
+  );
+};
 
 const CategoryCard = ({ reverse, children }) => (
   <div
@@ -260,18 +311,18 @@ const CategoryCarousel = () => {
     <CarouselWrapper>
       {categories.map((category, index) => (
         <CategoryCard key={index} reverse={index % 2 !== 0}>
-          <MindMapImage
-            src={`/images/category_diagrams/${category.name
-              .toLowerCase()
-              .replace(/\s+/g, "_")}.png`}
-            alt={`${category.name} mind map`}
-          />
           <CategoryContent>
             <CategoryName>{category.name}</CategoryName>
             <CategoryDescription>
               {getCategoryDescription(category)}
             </CategoryDescription>
           </CategoryContent>
+          <MindMapImage
+            src={`/images/category_diagrams/${category.name
+              .toLowerCase()
+              .replace(/\s+/g, "_")}.png`}
+            alt={`${category.name} mind map`}
+          />
         </CategoryCard>
       ))}
     </CarouselWrapper>
