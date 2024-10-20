@@ -130,7 +130,6 @@ const HomePage = () => {
         <Grid container spacing={4}>
           <Grid item xs={12}>
             <Card>
-              <CardHeader title="Categories" />
               <CardContent>
                 <CategoryCarousel categories={categories} />
               </CardContent>
