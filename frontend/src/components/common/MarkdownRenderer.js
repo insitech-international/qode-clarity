@@ -29,12 +29,44 @@ const MarkdownRenderer = ({ content }) => {
             </code>
           );
         },
-        h1: (props) => <Typography variant="h4" {...props} gutterBottom />,
-        h2: (props) => <Typography variant="h5" {...props} gutterBottom />,
-        h3: (props) => <Typography variant="h6" {...props} gutterBottom />,
-        p: (props) => <Typography variant="body1" {...props} paragraph />,
-        ul: (props) => <Box component="ul" sx={{ pl: 2 }} {...props} />,
-        ol: (props) => <Box component="ol" sx={{ pl: 2 }} {...props} />,
+        h1: (props) => (
+          <Typography
+            variant="h4"
+            {...props}
+            gutterBottom
+            sx={{ textAlign: "left" }}
+          />
+        ),
+        h2: (props) => (
+          <Typography
+            variant="h5"
+            {...props}
+            gutterBottom
+            sx={{ textAlign: "left" }}
+          />
+        ),
+        h3: (props) => (
+          <Typography
+            variant="h6"
+            {...props}
+            gutterBottom
+            sx={{ textAlign: "left" }}
+          />
+        ),
+        p: (props) => (
+          <Typography
+            variant="body1"
+            {...props}
+            paragraph
+            sx={{ textAlign: "left" }}
+          />
+        ),
+        ul: (props) => (
+          <Box component="ul" sx={{ pl: 2, textAlign: "left" }} {...props} />
+        ),
+        ol: (props) => (
+          <Box component="ol" sx={{ pl: 2, textAlign: "left" }} {...props} />
+        ),
       }}
     >
       {content}

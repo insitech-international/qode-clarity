@@ -90,8 +90,6 @@ You need to implement a context manager that manages the connection to the tempe
 
 # Notes
 
-Key Notes About Contextlib Managers:
-
 - Automatic Resource Management: Contextlib managers ensure that resources are properly allocated and released, reducing the risk of resource leaks.
 - Error Handling: They provide a structured approach to exception handling, allowing for more graceful error recovery.
 - Code Readability: By encapsulating setup and teardown logic, contextlib managers contribute to more readable and maintainable code.
@@ -109,3 +107,22 @@ Key Notes About Contextlib Managers:
 - The contextlib.contextmanager decorator is used to define generator-based context managers.
 - The contextlib.ContextDecorator base class provides a foundation for creating context managers that work with the @contextmanager decorator.
 - The contextlib.suppress() function allows suppressing specific exceptions within a context manager.
+
+### Best Practices and Common Pitfalls
+
+#### **Best Practices:**
+
+- Keep context managers focused: Each context manager should handle a single responsibility.
+- Use contextlib.contextmanager for simple cases: It simplifies the creation of context managers.
+- Always ensure cleanup: The **exit** method should handle all cleanup, even in error cases.
+- Be careful with return values: The **exit** method's return value determines exception propagation.
+- Use type hints: They improve code readability and catch potential errors early.
+- Document clearly: Explain what the context manager does, especially any side effects.
+
+#### **Common Pitfalls:**
+
+- Forgetting to release resources: Always release resources in the **exit** method.
+- Ignoring exceptions: Be cautious about silently catching exceptions in **exit**.
+- Performing too much in **enter**: Keep **enter** focused on setup to avoid exceptions before the context is fully entered.
+- Not considering thread safety: If the context manager might be used in multithreaded environments, ensure it's thread-safe.
+- Overuse of context managers: While powerful, they're not always necessary for simple operations.
