@@ -13,7 +13,7 @@ import {
   Alert,
   AlertTitle
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, color } from "framer-motion";
 import CategoryCarousel from "../components/category/CategoryCarousel";
 import FeaturedQuestions from "../components/common/FeaturedQuestions";
 import { useQuestionData, useCategories } from "../hooks/useQuestionData";
@@ -139,8 +139,8 @@ const HomePage = () => {
             <Card>
               <CardHeader title="BUCESR Framework" />
               <CardContent>
-                <Typography variant="body1" paragraph>
-                  The BUCESR (<i>Be Unique, Create Easy Solutions Regulary</i>) Framework is a systematic approach to break down and solve complex problems efficiently.
+              <Typography variant="body1" paragraph>
+                  The BUCESR <i style={{ color: "purple", fontWeight: "bold" }}>(Be Unique, Create Easy Solutions Regularly)</i> Framework is a systematic approach to break down and solve complex problems efficiently.
                 </Typography>
                 <BucesrCarousel />
               </CardContent>
