@@ -61,11 +61,10 @@ This problem fits into the Miscellaneous Greedy Problems category because:
 
 ## B - Break the Problem Down
 
-**_1. What is the core task, including inputs, outputs, and key conditions?_**
+**_1. What is the core task, including inputs and key conditions?_**
 
 - Core task: Optimize vehicle refueling across scenarios.
 - Inputs: Gas/cost arrays (V1), fuel/milestones (V2), vehicle/station data (V3).
-- Outputs: Starting station (V1), milestones crossed (V2), refueling schedule (V3).
 - Key conditions: Complete journey without fuel depletion, maximize efficiency.
 
 **_2. What is the final result or output required?_**
