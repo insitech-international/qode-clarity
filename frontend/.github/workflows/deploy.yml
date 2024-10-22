@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "frontend/**"
-      - "backend/**"
-      - "package*.json"
-  workflow_dispatch:   # Allow manual triggers
+  workflow_dispatch: 
 
 jobs:
   build-and-deploy:
