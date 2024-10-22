@@ -22,11 +22,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Disable Jekyll processing
-      - name: Disable Jekyll processing
-        run: |
-          touch ./frontend/build/.nojekyll
-
       - name: Create env file
         run: |
           echo "REACT_APP_API_URL=${{ secrets.API_URL }}" > .env
@@ -47,16 +42,17 @@ jobs:
         env:
           CI: true
 
-      # Create .nojekyll file in the build directory
-      - name: Create .nojekyll file
-        run: touch build/.nojekyll
+      # Copy build to Jekyll-friendly location
+      - name: Prepare for Jekyll
+        run: |
+          mkdir -p ../_site
+          cp -r build/* ../_site/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/build
+          publish_dir: ./_site
           publish_branch: gh-pages
           keep_files: true
           commit_message: "Deploy: ${{ github.event.head_commit.message }}"
-          enable_jekyll: false # Explicitly disable Jekyll
