@@ -17,6 +17,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Debug - Check initial structure
+        run: |
+          echo "Initial project structure:"
+          ls -la
+          echo "\nFrontend directory contents:"
+          ls -la frontend/
+          echo "\nPublic directory contents:"
+          ls -la frontend/public/
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -30,18 +39,40 @@ jobs:
 
       - name: Build project
         working-directory: ./frontend
-        run: npm run build
+        run: |
+          echo "PUBLIC_URL set to: $PUBLIC_URL"
+          npm run build
         env:
           CI: true
           PUBLIC_URL: "https://code-clarity.insitechinternational.com"
 
-      - name: Debug - List build contents
+      - name: Debug - Examine build output
         working-directory: ./frontend
         run: |
-          echo "Build directory contents:"
+          echo "Build directory structure:"
           ls -la build/
-          echo "Current working directory:"
-          pwd
+          echo "\nChecking for index.html in build:"
+          if [ -f "build/index.html" ]; then
+            echo "index.html exists in build directory"
+            echo "\nContent of index.html:"
+            head -n 20 build/index.html
+          else
+            echo "index.html is missing!"
+            echo "\nSearching for index.html:"
+            find . -name "index.html"
+          fi
+
+      - name: Prepare deployment
+        working-directory: ./frontend
+        run: |
+          # Ensure index.html exists and is in the right place
+          if [ ! -f "build/index.html" ]; then
+            echo "ERROR: index.html not found in build directory!"
+            exit 1
+          fi
+          # Create CNAME and .nojekyll
+          echo "code-clarity.insitechinternational.com" > build/CNAME
+          touch build/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -49,16 +80,21 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./frontend/build
           publish_branch: gh-pages
-          force_orphan: true  # This ensures a clean deployment
-          cname: code-clarity.insitechinternational.com
+          force_orphan: true
           enable_jekyll: false
-          commit_message: "Deploy: ${{ github.event.head_commit.message }}"
+          cname: code-clarity.insitechinternational.com
 
       - name: Verify deployment
         run: |
           git fetch origin gh-pages
           git checkout gh-pages
-          echo "Root directory contents:"
+          echo "Deployed files in gh-pages branch:"
           ls -la
-          echo "Checking for index.html:"
-          [ -f "index.html" ] && echo "index.html exists" || echo "index.html missing"
+          echo "\nChecking for crucial files:"
+          for file in index.html CNAME .nojekyll; do
+            if [ -f "$file" ]; then
+              echo "✓ $file exists"
+            else
+              echo "✗ $file is missing"
+            fi
+          done
