@@ -8,7 +8,7 @@ on:
       - "frontend/**"
       - "backend/**"
       - "package*.json"
-  workflow_dispatch:
+  workflow_dispatch:   # Allow manual triggers
 
 jobs:
   build-and-deploy:
@@ -21,11 +21,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Create env file
-        run: |
-          echo "REACT_APP_API_URL=${{ secrets.API_URL }}" > .env
-        if: ${{ hashFiles('backend/**') != '' }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -43,18 +38,11 @@ jobs:
           CI: true
           PUBLIC_URL: "/code-clarity"
 
-      # Create necessary Jekyll files
-      - name: Create Jekyll files
-        run: |
-          echo "title: Code Clarity" > ../config.yml
-          echo "baseurl: /code-clarity" >> ../config.yml
-          echo "url: https://insitechinternational.com" >> ../config.yml
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./frontend/build
           publish_branch: gh-pages
           keep_files: true
           commit_message: "Deploy: ${{ github.event.head_commit.message }}"
