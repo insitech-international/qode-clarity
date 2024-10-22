@@ -6,9 +6,9 @@ on:
       - main
     paths:
       - "frontend/**"
-      - "backend/**" # Added backend path trigger
-      - "package*.json" # In case of shared dependencies
-  workflow_dispatch: # Allow manual triggers
+      - "backend/**"
+      - "package*.json"
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -22,11 +22,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Add environment file creation if needed
+      # Disable Jekyll processing
+      - name: Disable Jekyll processing
+        run: |
+          touch ./frontend/build/.nojekyll
+
       - name: Create env file
         run: |
           echo "REACT_APP_API_URL=${{ secrets.API_URL }}" > .env
-        if: ${{ hashFiles('backend/**') != '' }} # Only if backend files changed
+        if: ${{ hashFiles('backend/**') != '' }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -43,6 +47,10 @@ jobs:
         env:
           CI: true
 
+      # Create .nojekyll file in the build directory
+      - name: Create .nojekyll file
+        run: touch build/.nojekyll
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -51,3 +59,4 @@ jobs:
           publish_branch: gh-pages
           keep_files: true
           commit_message: "Deploy: ${{ github.event.head_commit.message }}"
+          enable_jekyll: false # Explicitly disable Jekyll
