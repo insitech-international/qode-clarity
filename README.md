@@ -816,3 +816,12 @@ Explanation: [Brief explanation of the solution]
 # Notes
 
 [Include any additional notes, key concepts, or insights]
+
+
+
+  // "scripts": {
+  //   "start": "react-scripts start",
+  //   "build": "react-scripts build",
+  //   "test": "react-scripts test",
+  //   "eject": "react-scripts eject"
+  // },

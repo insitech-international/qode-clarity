@@ -8,7 +8,7 @@ const bucesrContent = {
     title: "Break the Problem Down",
     description: "Understand the problem before attempting to solve it.",
     questions: [
-      "What is the core task, including inputs, outputs, and key conditions?",
+      "What is the core task, including inputs and key conditions?",
       "What is the final result or output required?",
     ],
   },

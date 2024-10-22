@@ -60,11 +60,10 @@ Contextlib problems are classified as Advanced Python Concepts and Context Manag
 
 ## Be - Break the Problem Down
 
-**_1. What is the core task, including inputs, outputs, and key conditions?_**
+**_1. What is the core task, including inputs and key conditions?_**
 
 - Core task: Manage document operations with locking, logging, compression, and access control.
 - Inputs: Documents, user actions, permissions.
-- Outputs: Processed documents, logs, compressed files.
 - Key conditions: Prevent concurrent modifications, log all changes, compress files, enforce access control.
 
 **_2. What is the final result or output required?_**
