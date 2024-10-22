@@ -3,6 +3,10 @@
   "name": "python-query-vault",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -29,14 +33,6 @@
     "styled-components": "^6.1.13",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-    },
   "eslintConfig": {
     "extends": [
       "react-app",
