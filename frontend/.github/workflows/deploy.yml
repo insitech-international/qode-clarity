@@ -34,8 +34,12 @@ jobs:
         run: npm run build
         env:
           CI: true
-          # Remove the PUBLIC_URL since we're using a custom subdomain
-          # PUBLIC_URL: "/code-clarity"
+
+      - name: Debug - List build directory
+        run: ls -la build
+
+      - name: Debug - Check index.html
+        run: cat build/index.html || echo "index.html not found"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -46,3 +50,9 @@ jobs:
           keep_files: true
           cname: code-clarity.insitechinternational.com
           commit_message: "Deploy: ${{ github.event.head_commit.message }}"
+
+      - name: Debug - Check gh-pages branch
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          ls -la
