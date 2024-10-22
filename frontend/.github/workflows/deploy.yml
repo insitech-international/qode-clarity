@@ -33,21 +33,15 @@ jobs:
         run: npm run build
         env:
           CI: true
+          PUBLIC_URL: "https://code-clarity.insitechinternational.com"
 
-      - name: Debug - Check build output
+      - name: Debug - List build contents
         working-directory: ./frontend
         run: |
-          echo "Listing build directory contents:"
+          echo "Build directory contents:"
           ls -la build/
-          echo "Checking for index.html:"
-          cat build/index.html || echo "index.html not found"
-          echo "Checking for static directory:"
-          ls -la build/static || echo "static directory not found"
-
-      - name: Create necessary files
-        run: |
-          echo "code-clarity.insitechinternational.com" > ./frontend/build/CNAME
-          touch ./frontend/build/.nojekyll
+          echo "Current working directory:"
+          pwd
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -55,15 +49,16 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./frontend/build
           publish_branch: gh-pages
-          keep_files: false
+          force_orphan: true  # This ensures a clean deployment
           cname: code-clarity.insitechinternational.com
+          enable_jekyll: false
           commit_message: "Deploy: ${{ github.event.head_commit.message }}"
 
-      - name: Verify deployment files
+      - name: Verify deployment
         run: |
           git fetch origin gh-pages
           git checkout gh-pages
-          echo "Contents of gh-pages branch:"
+          echo "Root directory contents:"
           ls -la
-          echo "Checking for index.html in root:"
-          cat index.html || echo "index.html not found in root"
+          echo "Checking for index.html:"
+          [ -f "index.html" ] && echo "index.html exists" || echo "index.html missing"
