@@ -1,7 +1,7 @@
 // TermsOfService.js
 import React from "react";
 import styled from "styled-components";
-import Card from "./../components/common/Card"; // Adjust the import path as necessary
+import Card from "./../components/common/Card";
 
 const TermsContainer = styled.div`
   padding: 2rem;
