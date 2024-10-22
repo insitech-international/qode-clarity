@@ -41,18 +41,20 @@ jobs:
         run: npm run build
         env:
           CI: true
+          PUBLIC_URL: "/code-clarity"
 
-      # Copy build to Jekyll-friendly location
-      - name: Prepare for Jekyll
+      # Create necessary Jekyll files
+      - name: Create Jekyll files
         run: |
-          mkdir -p ../_site
-          cp -r build/* ../_site/
+          echo "title: Code Clarity" > ../config.yml
+          echo "baseurl: /code-clarity" >> ../config.yml
+          echo "url: https://insitechinternational.com" >> ../config.yml
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          publish_dir: ./build
           publish_branch: gh-pages
           keep_files: true
           commit_message: "Deploy: ${{ github.event.head_commit.message }}"
