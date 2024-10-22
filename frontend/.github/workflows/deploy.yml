@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: write
 
@@ -35,7 +35,9 @@ jobs:
           CI: true
 
       - name: Create CNAME file
-        run: echo "code-clarity.insitechinternational.com" > ./frontend/build/CNAME
+        run: |
+          echo "code-clarity.insitechinternational.com" > ./frontend/build/CNAME
+          touch ./frontend/build/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
