@@ -28,9 +28,14 @@ jobs:
           cd frontend
           npm run build
 
+      - name: Copy build files to docs
+        run: |
+          mkdir -p docs  # Ensure the docs directory exists
+          cp -r frontend/build/* docs/  # Copy build files to docs
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/build  # Adjust this if your build output is in a different location
+          publish_dir: docs  # Now pointing to the docs directory
           publish_branch: gh-pages
