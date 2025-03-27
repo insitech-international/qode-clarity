@@ -13,10 +13,10 @@ db = client['code-clarity-db']
 
 
 from fastapi import Depends, HTTPException, status
-from code_clarity_fastapi.settings import Settings
+from qode_clarity_fastapi.settings import Settings
 import pymongo
 import logging
-from code_clarity_fastapi.app.models import Thread, Message
+from qode_clarity_fastapi.app.models import Thread, Message
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 

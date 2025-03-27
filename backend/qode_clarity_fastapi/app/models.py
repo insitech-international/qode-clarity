@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from code_clarity_fastapi.settings import settings
+from qode_clarity_fastapi.settings import settings
 
 def get_db():
     client_kwargs = {}

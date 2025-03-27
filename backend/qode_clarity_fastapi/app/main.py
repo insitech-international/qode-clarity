@@ -1,12 +1,16 @@
-# In code_clarity_fastapi/app/main.py
-
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+"""
+Main application module for Qode Clarity API.
+This module initializes the FastAPI application and sets up routes.
+"""
 import logging
 from pathlib import Path
-from code_clarity_fastapi.app.routes import router, initialize
-from code_clarity_fastapi.app.file_manager import DatabaseManager, FileManager, QuestionManager, update_database
-from code_clarity_fastapi.settings import settings
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+# Local imports
+from qode_clarity_fastapi.app.routes import router, initialize
+from qode_clarity_fastapi.app.file_manager import FileManager, FirestoreManager, QuestionManager, update_database
+from qode_clarity_fastapi.settings import settings
 
 # Setup logging
 logging.basicConfig(
@@ -15,20 +19,21 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Create FastAPI app
 app = FastAPI(
     title=settings.app_name,
     description=settings.app_description,
     version=settings.app_version,
 )
 
-# Explicitly define CORS origins
-origins = [
+# Configure CORS
+origins = settings.allowed_origins or [
     "http://localhost:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
     "http://127.0.0.1:8000",
-    "https://code-clarity.insitechinternational.com",
+    "https://qode-clarity.insitechinternational.com",
 ]
 
 app.add_middleware(
@@ -51,24 +56,33 @@ app.add_middleware(
 base_dir = Path(__file__).parent.parent.parent
 settings.base_dir = base_dir
 
-db_manager = DatabaseManager()
+# Initialize managers
 file_manager = FileManager()
-question_manager = QuestionManager(db_manager, file_manager, base_dir)
+firestore_manager = FirestoreManager()
+question_manager = QuestionManager(firestore_manager, file_manager, base_dir)
 
 # Initialize the managers in the routes
-initialize(question_manager, db_manager)
+initialize(question_manager, firestore_manager, file_manager)
 
 # Include the router
 app.include_router(router)
 
 @app.on_event("startup")
 async def startup_event():
+    """Initialize the application on startup."""
     logger.info(f"Starting up the application from {base_dir}")
     try:
+        # Verify Firestore connection
+        firestore_db = firestore_manager.db
+        firestore_db.collection('questions').limit(1).get()
+        logger.info("Firestore connection verified")
+        
+        # Update database from files
         await update_database(base_dir)
         logger.info("Database update completed successfully")
+        
     except Exception as e:
-        logger.error(f"Error during database update: {str(e)}", exc_info=True)
+        logger.error(f"Error during startup: {str(e)}", exc_info=True)
         # Don't raise the exception - log it and continue startup
         # This allows the app to start even if there are data issues
 
