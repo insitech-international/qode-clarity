@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class DatabaseUpdateDiagnostic:
     def __init__(self, base_dir: str):
         self.base_dir = base_dir
-        self.data_dir = os.path.join(base_dir, 'code_clarity_fastapi', 'data')
+        self.data_dir = os.path.join(base_dir, 'qode_clarity_fastapi', 'data')
         
     async def run_diagnostics(self) -> Dict:
         """Run comprehensive diagnostics on database update process."""

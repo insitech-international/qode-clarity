@@ -24,6 +24,10 @@ app = FastAPI(
     title=settings.app_name,
     description=settings.app_description,
     version=settings.app_version,
+    # Update OpenAPI URL paths to include /api prefix
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json"
 )
 
 # Configure CORS
@@ -64,8 +68,8 @@ question_manager = QuestionManager(firestore_manager, file_manager, base_dir)
 # Initialize the managers in the routes
 initialize(question_manager, firestore_manager, file_manager)
 
-# Include the router
-app.include_router(router)
+# Include the router with the /api prefix
+app.include_router(router, prefix="/api")
 
 @app.on_event("startup")
 async def startup_event():

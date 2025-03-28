@@ -1,168 +1,123 @@
-import { useState, useEffect, useCallback } from "react";
-import DataFetcher from "../services/dataFetcher";
+import { useState, useCallback, useEffect } from "react";
+import ApiService from "../api/apiService";
 
-// Categories Hook
-export const useCategories = (options = {}) => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setLoading(true);
-      try {
-        const data = await DataFetcher.fetchData(
-          "/categories/", // API path
-          "/categories", // Static path
-          options
-        );
-
-        // Process categories based on the response format
-        let processedCategories = Array.isArray(data) ? data : [];
-
-        setCategories(processedCategories);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-        setError(err.message);
-        setCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, [JSON.stringify(options)]);
-
-  return { categories, loading, error };
-};
-
-// Main Question Data Hook
+/**
+ * Hook for accessing and managing question data
+ * @returns {Object} Question data and related functions
+ */
 export const useQuestionData = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [indexData, setIndexData] = useState(null);
 
-  // Load index data
-  const loadIndexData = useCallback(async () => {
-    try {
-      if (DataFetcher.DEVELOPMENT_MODE) {
-        // In development, get initial data from questions endpoint
-        const data = await DataFetcher.fetchData("/questions/");
-        setIndexData({ questions: data.questions || [] });
-      } else {
-        // In production, try static files
-        const data = await DataFetcher.fetchData(
-          null, // No API path
-          "/index.json" // Static path
-        );
-        setIndexData(data);
-      }
-    } catch (err) {
-      console.error("Error loading index data:", err);
-      setError("Failed to load index data");
-    }
-  }, []);
-
-  // Initial load
-  useEffect(() => {
-    if (!indexData) {
-      loadIndexData();
-    }
-  }, [indexData, loadIndexData]);
-
-  // Fetch Featured Questions
-  const fetchFeaturedQuestions = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await DataFetcher.fetchData(
-        "/featured_questions/", // API path
-        "/featured_questions" // Static path
-      );
-      return response;
-    } catch (err) {
-      console.error("Error fetching featured questions:", err);
-      setError(err.message || "Failed to fetch featured questions");
-      return { featured_questions: [] };
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Fetch Question List
+  /**
+   * Fetch questions with optional filtering parameters
+   * @param {Object} params - Query parameters for filtering questions
+   * @param {string} [params.search] - Search term for filtering questions
+   * @param {string} [params.category] - Category filter
+   * @param {string} [params.difficulty] - Difficulty filter
+   * @param {number} [params.skip=0] - Number of items to skip for pagination
+   * @param {number} [params.limit=10] - Maximum number of items to return
+   * @returns {Object} Questions result with pagination data
+   */
   const fetchQuestions = useCallback(async (params = {}) => {
     setLoading(true);
     setError(null);
 
     try {
-      const result = await DataFetcher.fetchData(
-        "/questions/", // API path
-        "/questions", // Static path
-        params
-      );
+      const result = await ApiService.getQuestions(params);
 
-      setQuestions(result.questions || []);
-      return result;
+      if (result && Array.isArray(result.questions)) {
+        setQuestions(result.questions);
+      } else {
+        setQuestions([]);
+        console.warn(
+          "Questions response did not contain an array of questions:",
+          result
+        );
+      }
+
+      return result || { questions: [], total: 0, skip: 0, limit: 10 };
     } catch (err) {
       console.error("Error fetching questions:", err);
       setError("Failed to fetch questions");
-      return { questions: [], total: 0, skip: 0, limit: 0 };
+      setQuestions([]);
+      return { questions: [], total: 0, skip: 0, limit: 10 };
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Fetch Single Question
-  const fetchQuestionDetails = useCallback(async (questionId) => {
+  /**
+   * Fetch featured questions for each category
+   * @returns {Object} Object with category names as keys and arrays of questions as values
+   */
+  const fetchFeaturedQuestions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      return await DataFetcher.fetchData(
-        `/questions/${questionId}/`, // API path
-        `/questions/${questionId}` // Static path
-      );
+      const response = await ApiService.getFeaturedQuestions();
+      return response || {};
+    } catch (err) {
+      console.error("Error fetching featured questions:", err);
+      setError("Failed to fetch featured questions");
+      return {};
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  /**
+   * Fetch details for a specific question
+   * @param {string|number} questionId - ID of the question to fetch
+   * @returns {Object} Question details
+   */
+  const fetchQuestionDetails = useCallback(async (questionId) => {
+    if (!questionId) {
+      throw new Error("Question ID is required");
+    }
+
+    try {
+      return await ApiService.getQuestionDetails(questionId);
     } catch (err) {
       console.error(`Error fetching question details for ${questionId}:`, err);
       throw err;
     }
   }, []);
 
-  // Fetch Solution
-  const fetchSolution = useCallback(async (questionId) => {
+  /**
+   * Fetch just the content of a specific question
+   * @param {string|number} questionId - ID of the question to fetch content for
+   * @returns {Object} Object containing the question content
+   */
+  const fetchQuestionContent = useCallback(async (questionId) => {
+    if (!questionId) {
+      throw new Error("Question ID is required");
+    }
+
     try {
-      return await DataFetcher.fetchData(
-        `/solutions/${questionId}/`, // API path
-        `/solutions/${questionId}` // Static path
-      );
+      return await ApiService.getQuestionContent(questionId);
+    } catch (err) {
+      console.error(`Error fetching question content for ${questionId}:`, err);
+      throw err;
+    }
+  }, []);
+
+  /**
+   * Fetch solution for a specific question
+   * @param {string|number} questionId - ID of the question to fetch solution for
+   * @returns {Object} Solution data
+   */
+  const fetchSolution = useCallback(async (questionId) => {
+    if (!questionId) {
+      throw new Error("Question ID is required");
+    }
+
+    try {
+      return await ApiService.getSolution(questionId);
     } catch (err) {
       console.error(`Error fetching solution for ${questionId}:`, err);
-      throw err;
-    }
-  }, []);
-
-  // Development-only operations
-  const testDbConnection = useCallback(async () => {
-    if (!DataFetcher.DEVELOPMENT_MODE) {
-      throw new Error("Database operations only available in development mode");
-    }
-    try {
-      return await DataFetcher.fetchData("/test-db-connection");
-    } catch (err) {
-      console.error("Error testing DB connection:", err);
-      throw err;
-    }
-  }, []);
-
-  const triggerDatabaseUpdate = useCallback(async () => {
-    if (!DataFetcher.DEVELOPMENT_MODE) {
-      throw new Error("Database operations only available in development mode");
-    }
-    try {
-      return await DataFetcher.fetchData("/update-database", null, null, {
-        method: "POST",
-      });
-    } catch (err) {
-      console.error("Error triggering database update:", err);
       throw err;
     }
   }, []);
@@ -172,30 +127,50 @@ export const useQuestionData = () => {
     questions,
     loading,
     error,
-    indexData,
 
     // Data fetching methods
-    loadIndexData,
     fetchQuestions,
     fetchQuestionDetails,
+    fetchQuestionContent,
     fetchSolution,
     fetchFeaturedQuestions,
-
-    // Development-only methods
-    testDbConnection,
-    triggerDatabaseUpdate,
   };
 };
 
-// Optional offline mode hook
-export const useOfflineMode = (initialMode = false) => {
-  const [offlineMode, setOfflineMode] = useState(initialMode);
+/**
+ * Hook for accessing and managing category data
+ * @param {number} [skip=0] - Number of items to skip
+ * @param {number} [limit=100] - Maximum number of items to return
+ * @returns {Object} Category data and loading state
+ */
+export const useCategories = (skip = 0, limit = 100) => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if ("setOfflineMode" in DataFetcher) {
-      DataFetcher.setOfflineMode(offlineMode);
+  const fetchCategories = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await ApiService.getCategories(skip, limit);
+      setCategories(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setError(err.message || "Failed to fetch categories");
+      setCategories([]);
+    } finally {
+      setLoading(false);
     }
-  }, [offlineMode]);
+  }, [skip, limit]);
 
-  return [offlineMode, setOfflineMode];
+  // Initial fetch when the hook is used
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  return {
+    categories,
+    loading,
+    error,
+    refreshCategories: fetchCategories,
+  };
 };

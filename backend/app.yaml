@@ -1,0 +1,23 @@
+runtime: python311
+instance_class: F1
+
+entrypoint: uvicorn qode_clarity_fastapi.app.main:app --host=0.0.0.0 --port=${PORT}
+
+env_variables:
+  QODE_CLARITY_ENVIRONMENT: "production"
+  QODE_CLARITY_DEBUG: "false"
+  QODE_CLARITY_GCP_PROJECT_ID: "qode-clarity"
+  QODE_CLARITY_FIREBASE_PROJECT_ID: "qode-clarity-cc69d"
+  QODE_CLARITY_ALLOWED_ORIGINS: "https://qode-clarity.insitechinternational.com,https://www.qode-clarity.insitechinternational.com"
+  QODE_CLARITY_ENABLE_CACHE: "true"
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 1
+
+handlers:
+- url: /.*
+  script: auto
+
+includes:
+- secret_settings.yaml

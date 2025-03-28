@@ -1,4 +1,4 @@
-# backend\code_clarity_fastapi\app\database.py
+# backend\qode_clarity_fastapi\app\database.py
 
 from pymongo import MongoClient
 import os

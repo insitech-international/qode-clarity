@@ -1,4 +1,4 @@
-name: Deploy Frontend & Generate Categories
+name: Deploy Frontend & Backend to Cloud Run with Firestore
 
 on:
   push:
@@ -12,10 +12,14 @@ env:
   BACKEND_DIRECTORY: "./backend"
   PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
   REACT_APP_API_URL: ${{ secrets.API_URL }}
-  REACT_APP_STATIC_URL: ${{ secrets.STATIC_URL }}
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: "us-central1"
+  GCP_APP_NAME: "qode-clarity-api"
+  FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+  ARTIFACT_REGISTRY_REPO: "qode-clarity-repo"
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -37,7 +41,7 @@ jobs:
         run: |
           echo "Checking for in-progress deployments..."
           deployments=$(gh api \
-            repos/insitech-international/code-clarity/deployments \
+            repos/${{ github.repository }}/deployments \
             --jq '.[] | select(.environment == "github-pages" and .state == "in_progress") | .id' \
             2>/dev/null || echo "")
 
@@ -50,7 +54,7 @@ jobs:
             echo "Canceling deployment $deployment..."
             gh api \
               -X POST \
-              repos/insitech-international/code-clarity/deployments/$deployment/statuses \
+              repos/${{ github.repository }}/deployments/$deployment/statuses \
               -f state="inactive" \
               --silent || echo "Failed to cancel deployment $deployment"
           done
@@ -59,132 +63,137 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Python Setup
+      # Setup GCP CLI
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # Enable required APIs if not already enabled
+      - name: Enable GCP APIs
+        run: |
+          gcloud services enable run.googleapis.com
+          gcloud services enable artifactregistry.googleapis.com
+          gcloud services enable cloudbuild.googleapis.com
+          gcloud services enable firestore.googleapis.com
+
+      # Setup Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Setup Firebase Tools
+      - name: Setup Firebase CLI
+        run: npm install -g firebase-tools
+
+      # Setup Python for Backend
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
 
-      - name: Ensure pip cache directory exists
-        run: mkdir -p ~/.cache/pip
-
-      # Data Directory Population
-      - name: Create and Populate Data Directories
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+      # Configure Firebase Service Account
+      - name: Configure Firebase Service Account
+        working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: |
-          mkdir -p public/static/data/{questions,solutions}
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > firebase-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/firebase-key.json" >> $GITHUB_ENV
+          echo "QODE_CLARITY_FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase-key.json" >> $GITHUB_ENV
+          echo "QODE_CLARITY_FIREBASE_PROJECT_ID=${{ env.FIREBASE_PROJECT_ID }}" >> $GITHUB_ENV
+          echo "QODE_CLARITY_GCP_PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
 
-          echo "Copying question bank..."
-          if ! cp -r ../backend/code_clarity_fastapi/data/question_bank/* public/static/data/questions/; then
-            echo "Error copying question bank"
-            exit 1
+      # Use the included migrate_to_firestore.py script
+      - name: Import Data to Firestore
+        working-directory: ${{ env.BACKEND_DIRECTORY }}
+        run: |
+          # Install required dependencies
+          pip install -r requirements.txt
+
+          echo "Running data migration from file system to Firestore..."
+          python qode_clarity_fastapi/app/migrate_data.py
+
+      # Build and Deploy Backend to Cloud Run
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev
+
+      - name: Create or ensure Artifact Registry repository exists
+        run: |
+          # Check if repository exists, create if not
+          if ! gcloud artifacts repositories describe ${{ env.ARTIFACT_REGISTRY_REPO }} --location=${{ env.GCP_REGION }} &>/dev/null; then
+            echo "Creating Artifact Registry repository..."
+            gcloud artifacts repositories create ${{ env.ARTIFACT_REGISTRY_REPO }} \
+              --repository-format=docker \
+              --location=${{ env.GCP_REGION }} \
+              --description="Docker repository for Qode Clarity"
+          else
+            echo "Artifact Registry repository already exists."
           fi
 
-          echo "Copying solution bank..."
-          if ! cp -r ../backend/code_clarity_fastapi/data/solution_bank/* public/static/data/solutions/; then
-            echo "Error copying solution bank"
-            exit 1
-          fi
-
-          # Generate directory listings
-          find public/static/data/questions -type d | while read dir; do
-            (cd "$dir" && ls -1 > directory_listing.txt)
-          done
-
-          find public/static/data/solutions -type d | while read dir; do
-            (cd "$dir" && ls -1 > directory_listing.txt)
-          done
-
-          echo "Verifying directory structure..."
-          find public/static/data -type d
-          echo "Verifying file counts..."
-          echo "Questions: $(find public/static/data/questions -type f -name "*.md" | wc -l)"
-          echo "Solutions: $(find public/static/data/solutions -type f -name "*.md" | wc -l)"
-
-      # Generate Categories
-      - name: Generate Categories JSON
+      - name: Build and Push Backend Docker Image
+        working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: |
-          echo "Current working directory: $(pwd)"
-          echo "Repository structure:"
-          find . -type d -maxdepth 3
+          # Create Dockerfile if it doesn't exist
+          if [ ! -f "Dockerfile" ]; then
+            cat > Dockerfile << 'EOF'
+          FROM python:3.9-slim
 
-          # Execute the generate_categories.py script with explicit paths
-          python ./backend/code_clarity_fastapi/scripts/generate_categories.py
+          WORKDIR /app
 
-          # Verify the file was created
-          echo "Checking generated categories.json..."
-          ls -l ./frontend/public/static/data/categories.json
-          echo "Categories content:"
-          cat ./frontend/public/static/data/categories.json
+          # Copy requirements first for better caching
+          COPY requirements.txt .
+          RUN pip install --no-cache-dir -r requirements.txt
 
-      # Index Generation
-      - name: Generate Index Files
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: |
-          mkdir -p scripts
+          # Copy the rest of the application
+          COPY . .
 
-          cat > scripts/generateIndex.js << 'EOF'
-          const fs = require('fs');
-          const path = require('path');
-          
-          function walkDir(dir, baseDir) {
-            let results = [];
-            const list = fs.readdirSync(dir);
-          
-            list.forEach((file) => {
-              const filePath = path.join(dir, file);
-              const stat = fs.statSync(filePath);
-          
-              if (stat && stat.isDirectory()) {
-                results = results.concat(walkDir(filePath, baseDir));
-              } else if (path.extname(file) === '.md') {
-                const id = file.split('_')[0];
-                // Get path relative to the questions/solutions directory
-                const relativePath = path.relative(baseDir, filePath);
-                results.push({
-                  id: parseInt(id),
-                  path: relativePath // This will be like 'Advanced_Python_Concepts/Context_Managers/111_Contextlib_Module.md'
-                });
-              }
-            });
-          
-            return results;
-          }
-          
-          function generateIndex() {
-            const baseDir = process.cwd();
-            const questionsDir = path.join(baseDir, 'public/static/data/questions');
-            const solutionsDir = path.join(baseDir, 'public/static/data/solutions');
-          
-            console.log('Processing directories:', {
-              questionsDir,
-              solutionsDir
-            });
-          
-            const index = {
-              questions: walkDir(questionsDir, questionsDir),
-              solutions: walkDir(solutionsDir, solutionsDir)
-            };
-          
-            // Log some sample paths for verification
-            console.log('Sample question paths:', index.questions.slice(0, 3));
-            console.log('Sample solution paths:', index.solutions.slice(0, 3));
-          
-            const outputPath = path.join(baseDir, 'public/static/data/index.json');
-            fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
-            console.log(`Index file generated at: ${outputPath}`);
-          }
-          
-          generateIndex();
+          # Set environment variables
+          ENV PORT=8080
+          ENV PYTHONUNBUFFERED=1
+          ENV QODE_CLARITY_ENVIRONMENT=production
+
+          # Command to run the application
+          CMD exec gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind :$PORT
           EOF
+          fi
 
-          node scripts/generateIndex.js
+          # Build and push the Docker image
+          IMAGE_URL="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY_REPO }}/${{ env.GCP_APP_NAME }}:${{ github.sha }}"
 
-          echo "Checking generated files..."
-          ls -l public/static/data/index.json
+          echo "Building Docker image: $IMAGE_URL"
+          docker build -t $IMAGE_URL .
 
-      # Setup Node.js
+          echo "Pushing Docker image to Artifact Registry..."
+          docker push $IMAGE_URL
+
+          echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
+
+      - name: Deploy Backend to Cloud Run
+        run: |
+          echo "Deploying to Cloud Run: ${{ env.IMAGE_URL }}"
+
+          gcloud run deploy ${{ env.GCP_APP_NAME }} \
+            --image ${{ env.IMAGE_URL }} \
+            --platform managed \
+            --region ${{ env.GCP_REGION }} \
+            --allow-unauthenticated \
+            --set-env-vars="QODE_CLARITY_ENVIRONMENT=production" \
+            --memory=512Mi \
+            --cpu=1 \
+            --port=8080 \
+            --min-instances=0 \
+            --max-instances=2
+
+          # Get the deployed URL
+          SERVICE_URL=$(gcloud run services describe ${{ env.GCP_APP_NAME }} --region ${{ env.GCP_REGION }} --format='value(status.url)')
+          echo "CLOUD_RUN_URL=$SERVICE_URL" >> $GITHUB_ENV
+          echo "Deployed to: $SERVICE_URL"
+
+      # Setup Node.js for Frontend
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -197,13 +206,44 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
           cat > .env << EOF
-          REACT_APP_API_URL=${{ env.REACT_APP_API_URL }}
-          REACT_APP_STATIC_URL=${{ env.REACT_APP_STATIC_URL }}
+          REACT_APP_API_URL=${{ env.CLOUD_RUN_URL }}/api
           PUBLIC_URL=${{ env.PUBLIC_URL }}
+          REACT_APP_FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_PROJECT_ID=${{ env.FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}
           NODE_ENV=production
           EOF
 
           cat .env
+
+      # Create Firebase Configuration
+      - name: Create Firebase Config
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          mkdir -p src/firebase
+
+          cat > src/firebase/config.js << EOF
+          import { initializeApp } from 'firebase/app';
+          import { getFirestore } from 'firebase/firestore';
+          import { getAuth } from 'firebase/auth';
+
+          const firebaseConfig = {
+            apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+            authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+            storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+            messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+            appId: process.env.REACT_APP_FIREBASE_APP_ID
+          };
+
+          const app = initializeApp(firebaseConfig);
+          export const db = getFirestore(app);
+          export const auth = getAuth(app);
+          export default app;
+          EOF
 
       # Frontend Dependencies and Build
       - name: Install Frontend Dependencies
@@ -216,20 +256,10 @@ jobs:
             react-icons@4.12.0 \
             gh-pages@6.1.1 \
             axios@1.6.7 \
-            fs-extra@11.2.0
+            firebase@10.8.0
           npm install --save-dev @babel/plugin-proposal-private-property-in-object@7.21.11
 
           npm list --depth=0
-
-      - name: Setup Frontend Base Environment
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: |
-          cat > .env << EOF
-          REACT_APP_BASE_URL=${{ env.PUBLIC_URL }}
-          PUBLIC_URL=${{ env.PUBLIC_URL }}
-          EOF
-
-          cat .env
 
       - name: Build Frontend Application
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -278,8 +308,19 @@ jobs:
         with:
           enablement: true
 
-      # Deployment Verification
-      - name: Verify Deployment Branch
+      # Create a release for tracking
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_TAG="release-$(date +'%Y%m%d%H%M%S')"
+
+          gh release create $RELEASE_TAG \
+            --title "Deployment $RELEASE_TAG" \
+            --notes "Deployed to GitHub Pages and Cloud Run on $(date +'%Y-%m-%d %H:%M:%S')\nBackend URL: ${{ env.CLOUD_RUN_URL }}"
+
+      # Verify Deployments
+      - name: Verify GitHub Pages Deployment
         run: |
           MAX_ATTEMPTS=10
           ATTEMPT=1
@@ -288,11 +329,49 @@ jobs:
             echo "Checking gh-pages branch (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
             if git ls-remote --heads origin gh-pages > /dev/null; then
               echo "✓ gh-pages branch exists and is ready"
-              exit 0
+              break
             fi
             ATTEMPT=$((ATTEMPT + 1))
             sleep 10
           done
 
-          echo "Error: gh-pages branch was not created after $MAX_ATTEMPTS attempts"
-          exit 1
+          if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
+            echo "Error: gh-pages branch was not created after $MAX_ATTEMPTS attempts"
+            exit 1
+          fi
+
+      - name: Verify Cloud Run Deployment
+        run: |
+          echo "Checking Cloud Run deployment status..."
+
+          MAX_ATTEMPTS=10
+          ATTEMPT=1
+
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Checking deployment status (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
+            
+            STATUS=$(gcloud run services describe ${{ env.GCP_APP_NAME }} --region ${{ env.GCP_REGION }} --format="value(status.conditions[0].status)")
+            
+            if [[ "$STATUS" == "True" ]]; then
+              echo "✓ Cloud Run deployment is serving traffic"
+              echo "Service URL: ${{ env.CLOUD_RUN_URL }}"
+              break
+            fi
+            
+            ATTEMPT=$((ATTEMPT + 1))
+            sleep 15
+          done
+
+          if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
+            echo "Warning: Could not verify Cloud Run deployment status after $MAX_ATTEMPTS attempts"
+            # Don't fail the workflow, as deployment might still be in progress
+          fi
+
+      # Clean up sensitive files
+      - name: Clean up sensitive files
+        if: always()
+        run: |
+          echo "Cleaning up sensitive files..."
+          if [ -f "${{ env.BACKEND_DIRECTORY }}/firebase-key.json" ]; then
+            rm -f "${{ env.BACKEND_DIRECTORY }}/firebase-key.json"
+          fi
