@@ -89,4 +89,9 @@ credentials/
 certificates/
 
 # Poetry
-poetry.lock
+poetry.locknode_modules/
+*/node_modules/
+*.pack
+.cache/
+*/cache/
+*/.cache/
