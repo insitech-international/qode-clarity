@@ -46,11 +46,11 @@ def initialize_firestore() -> FirestoreClient:
             # For GCP environment, use application default credentials
             firebase_admin.initialize_app()
             
-        return firestore.client()
+        return firestore.client(database='qode-clarity-db')
     except Exception as e:
         logger.error(f"Error initializing Firestore: {e}")
         raise
-
+    
 def extract_id_from_filename(filename: str) -> int:
     """Extract the numeric ID from a filename."""
     try:

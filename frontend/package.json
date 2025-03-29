@@ -1,6 +1,6 @@
 {
-  "homepage": "https://insitechinternational.com/code-clarity",
-  "name": "python-query-vault",
+  "homepage": "https://clarity.insitechinternational.com",
+  "name": "qode-clarity-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {

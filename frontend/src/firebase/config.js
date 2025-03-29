@@ -1,16 +1,8 @@
 // src/firebase/config.js
-import { initializeApp } from 'firebase/app';
-import {
-  getFirestore,
-  connectFirestoreEmulator
-} from 'firebase/firestore';
-import {
-  getAuth,
-  connectAuthEmulator
-} from 'firebase/auth';
-import {
-  getAnalytics
-} from 'firebase/analytics';
+import { initializeApp } from "firebase/app";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -20,8 +12,16 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
 };
+
+// Log environment information without sensitive data
+console.log(`Firebase initializing in ${process.env.NODE_ENV} environment`);
+console.log(`Using project: ${process.env.REACT_APP_FIREBASE_PROJECT_ID}`);
+console.log(
+  `Emulator enabled: ${process.env.REACT_APP_USE_FIREBASE_EMULATOR === "true"}`
+);
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -32,17 +32,32 @@ const db = getFirestore(app);
 // Initialize Authentication
 const auth = getAuth(app);
 
-// Initialize Analytics (only in production environment)
+// Initialize Analytics conditionally
 let analytics = null;
-if (process.env.NODE_ENV === 'production') {
-  analytics = getAnalytics(app);
-}
+const initAnalytics = async () => {
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.REACT_APP_ENABLE_ANALYTICS === "true"
+  ) {
+    // Check if analytics is supported in the current environment
+    const analyticsSupported = await isSupported();
+    if (analyticsSupported) {
+      analytics = getAnalytics(app);
+      console.log("Firebase Analytics initialized");
+    } else {
+      console.log("Firebase Analytics not supported in this environment");
+    }
+  }
+};
 
-// Connect to emulators if in development mode
-if (process.env.REACT_APP_USE_FIREBASE_EMULATOR === 'true') {
-  const host = process.env.REACT_APP_FIREBASE_EMULATOR_HOST || 'localhost';
-  const firestorePort = process.env.REACT_APP_FIRESTORE_EMULATOR_PORT || '8090';
-  const authPort = process.env.REACT_APP_AUTH_EMULATOR_PORT || '9099';
+// Call the async function
+initAnalytics().catch(console.error);
+
+// Connect to emulators if enabled
+if (process.env.REACT_APP_USE_FIREBASE_EMULATOR === "true") {
+  const host = process.env.REACT_APP_FIREBASE_EMULATOR_HOST || "localhost";
+  const firestorePort = process.env.REACT_APP_FIRESTORE_EMULATOR_PORT || "8090";
+  const authPort = process.env.REACT_APP_FIREBASE_AUTH_EMULATOR_PORT || "9099";
 
   console.log(`Connecting to Firestore emulator at ${host}:${firestorePort}`);
   connectFirestoreEmulator(db, host, parseInt(firestorePort));
