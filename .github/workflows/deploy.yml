@@ -217,10 +217,12 @@ jobs:
             --min-instances=0 \
             --max-instances=2
 
-          # Get the deployed URL
+          # Get the deployed URL and set both Cloud Run URL and API URL in environment variables
           SERVICE_URL=$(gcloud run services describe ${{ env.GCP_APP_NAME }} --region ${{ env.GCP_REGION }} --format='value(status.url)')
           echo "CLOUD_RUN_URL=$SERVICE_URL" >> $GITHUB_ENV
-          echo "Deployed to: $SERVICE_URL"
+          echo "API_URL=${{ secrets.API_URL }}" >> $GITHUB_ENV
+          echo "Deployed to Cloud Run: $SERVICE_URL"
+          echo "API Custom Domain: ${{ secrets.API_URL }}"
 
       # Setup Node.js for Frontend
       - name: Setup Node.js
@@ -244,7 +246,7 @@ jobs:
           # Create production-specific environment file
           cat > .env.production << EOF
           REACT_APP_ENV=production
-          REACT_APP_API_BASE_URL=${{ env.CLOUD_RUN_URL }}/api
+          REACT_APP_API_BASE_URL=${{ secrets.API_URL }}/api
           PUBLIC_URL=${{ env.PUBLIC_URL }}
           REACT_APP_DEBUG=false
           REACT_APP_LOG_LEVEL=error
@@ -351,7 +353,7 @@ jobs:
 
           gh release create $RELEASE_TAG \
             --title "Deployment $RELEASE_TAG" \
-            --notes "Deployed to GitHub Pages and Cloud Run on $(date +'%Y-%m-%d %H:%M:%S')\nBackend URL: ${{ env.CLOUD_RUN_URL }}"
+            --notes "Deployed to GitHub Pages and Cloud Run on $(date +'%Y-%m-%d %H:%M:%S')\nBackend URL: ${{ secrets.API_URL }}"
 
       # Verify Deployments
       - name: Verify GitHub Pages Deployment
@@ -388,7 +390,7 @@ jobs:
             
             if [[ "$STATUS" == "True" ]]; then
               echo "✓ Cloud Run deployment is serving traffic"
-              echo "Service URL: ${{ env.CLOUD_RUN_URL }}"
+              echo "Service URL: ${{ env.API_URL }}"
               break
             fi
             
