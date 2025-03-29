@@ -101,13 +101,37 @@ jobs:
       - name: Configure GCP Service Account
         working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: |
-          # Set up Firebase service account
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > firebase-key.json
+          # Set up Firebase service account (with base64 decode)
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' | base64 --decode > firebase-key.json
+
+          # Check if the Firebase key file is valid
+          if [ -s firebase-key.json ]; then
+            echo "Firebase key file created successfully"
+            echo "File size: $(stat -c%s firebase-key.json) bytes"
+            echo "Checking file content structure..."
+            jq -r 'keys | join(", ")' firebase-key.json || echo "Error: Not valid JSON"
+          else
+            echo "Error: Firebase key file is empty"
+            exit 1
+          fi
+
+          # Set up GCP service account for deployment (with base64 decode)
+          echo '${{ secrets.GCP_SA_KEY }}' | base64 --decode > gcp-github-deployment.json
+
+          # Check if the GCP key file is valid
+          if [ -s gcp-github-deployment.json ]; then
+            echo "GCP key file created successfully"
+            echo "File size: $(stat -c%s gcp-github-deployment.json) bytes"
+            echo "Checking file content structure..."
+            jq -r 'keys | join(", ")' gcp-github-deployment.json || echo "Error: Not valid JSON"
+          else
+            echo "Error: GCP key file is empty"
+            exit 1
+          fi
+
+          # Set environment variables
           echo "QODE_CLARITY_FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase-key.json" >> $GITHUB_ENV
           echo "QODE_CLARITY_FIREBASE_PROJECT_ID=${{ env.FIREBASE_PROJECT_ID }}" >> $GITHUB_ENV
-
-          # Set up GCP service account for deployment
-          echo '${{ secrets.GCP_SA_KEY }}' > gcp-github-deployment.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp-github-deployment.json" >> $GITHUB_ENV
           echo "QODE_CLARITY_GCP_GITHUB_CREDENTIALS_PATH=$(pwd)/gcp-github-deployment.json" >> $GITHUB_ENV
           echo "QODE_CLARITY_GCP_PROJECT_ID=${{ env.GCP_PROJECT_ID }}" >> $GITHUB_ENV
