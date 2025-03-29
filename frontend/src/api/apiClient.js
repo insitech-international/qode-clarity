@@ -3,15 +3,15 @@
  */
 class ApiClient {
   constructor() {
-    // Base URL for API requests - adjust based on your environment
-      this.baseUrl = process.env.REACT_APP_API_URL || "/api";
-      console.log(`API Client: Base URL is ${this.baseUrl}`);
+    // Base URL for API requests - use REACT_APP_API_BASE_URL from environment
+    this.baseUrl = process.env.REACT_APP_API_BASE_URL || "/api";
+    console.log(`API Client: Base URL is ${this.baseUrl}`);
 
     // Detect if we're running in a development environment
     this.isDevelopment = process.env.NODE_ENV === "development";
 
     // API request configuration
-    this.timeout = 3000; // 3 second timeout
+    this.timeout = 5000; // 5 second timeout
     this.retryCount = 0;
     this.maxRetries = 1; // Only retry once
     this.serviceAvailable = true; // Track if service appears to be down
@@ -86,7 +86,15 @@ class ApiClient {
       throw new Error("API service is unavailable");
     }
 
-    const url = `${this.baseUrl}${endpoint}${this.createQueryString(params)}`;
+    // Ensure endpoint starts with a slash
+    const normalizedEndpoint = endpoint.startsWith("/")
+      ? endpoint
+      : `/${endpoint}`;
+
+    // Build the full URL
+    const url = `${this.baseUrl}${normalizedEndpoint}${this.createQueryString(
+      params
+    )}`;
 
     // Create abort controller for timeout handling
     const controller = new AbortController();
@@ -116,7 +124,7 @@ class ApiClient {
         const errorStatus = response.status;
 
         if (errorStatus === 404) {
-          throw new Error(`Resource not found: ${endpoint}`);
+          throw new Error(`Resource not found: ${normalizedEndpoint}`);
         } else if (errorStatus >= 500) {
           // Server errors might be temporary
           this.incrementFailureCount();
@@ -134,6 +142,8 @@ class ApiClient {
       // Parse JSON response
       return await response.json();
     } catch (error) {
+      clearTimeout(timeoutId);
+
       if (error.name === "AbortError") {
         console.error(`API request timed out: ${url}`);
 

@@ -13,6 +13,14 @@ class ApiService {
 
     // Flag to track if the API is available
     this.apiAvailable = true;
+
+    // Log the environment we're operating in
+    console.log(
+      `API Service initialized in ${process.env.NODE_ENV} environment`
+    );
+    console.log(
+      `API Base URL: ${process.env.REACT_APP_API_BASE_URL || "/api"}`
+    );
   }
 
   /**
@@ -63,7 +71,7 @@ class ApiService {
     this.checkApiAvailability();
 
     try {
-      return await apiClient.get("/categories/", { skip, limit });
+      return await apiClient.get("/categories", { skip, limit });
     } catch (error) {
       console.error("Failed to fetch categories:", error);
 
@@ -94,7 +102,7 @@ class ApiService {
     };
 
     try {
-      return await apiClient.get("/questions/", queryParams);
+      return await apiClient.get("/questions", queryParams);
     } catch (error) {
       console.error("Failed to fetch questions:", error);
 
@@ -116,7 +124,7 @@ class ApiService {
     this.checkApiAvailability();
 
     try {
-      return await apiClient.get("/featured_questions/");
+      return await apiClient.get("/featured_questions");
     } catch (error) {
       console.error("Failed to fetch featured questions:", error);
 
