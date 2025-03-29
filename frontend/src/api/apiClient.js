@@ -4,7 +4,18 @@
 class ApiClient {
   constructor() {
     // Base URL for API requests - use REACT_APP_API_BASE_URL from environment
-    this.baseUrl = process.env.REACT_APP_API_BASE_URL || "/api";
+    let baseUrl = process.env.REACT_APP_API_BASE_URL || "/api";
+
+    // Force HTTPS in production
+    if (
+      baseUrl.includes("clarity.insitechinternational.com") &&
+      baseUrl.startsWith("http:")
+    ) {
+      baseUrl = baseUrl.replace("http:", "https:");
+      console.log(`Forced HTTPS, new Base URL: ${baseUrl}`);
+    }
+
+    this.baseUrl = baseUrl;
     console.log(`API Client: Base URL is ${this.baseUrl}`);
 
     // Detect if we're running in a development environment
