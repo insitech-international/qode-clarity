@@ -90,3 +90,10 @@ certificates/
 
 # Poetry
 poetry.lock
+
+# Service account credentials
+*-base64.txt
+firebase-key-base64.txt
+gcp-github-deployment-base64.txt
+firebase-key.json
+gcp-github-deployment.json

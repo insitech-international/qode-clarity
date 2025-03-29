@@ -95,3 +95,21 @@ poetry.locknode_modules/
 .cache/
 */cache/
 */.cache/
+
+# Service account credentials
+*-base64.txt
+firebase-key-base64.txt
+gcp-github-deployment-base64.txt
+firebase-key.json
+gcp-github-deployment.json
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.* 
