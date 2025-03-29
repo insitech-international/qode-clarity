@@ -11,7 +11,8 @@ COPY . .
 
 # Set environment variables
 ENV PORT=8080
+ENV PYTHONUNBUFFERED=1
 ENV QODE_CLARITY_ENVIRONMENT=production
 
-# Command to run the application
-CMD exec gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind :$PORT
+# Command to run the application with the correct module path
+CMD exec gunicorn -w 4 -k uvicorn.workers.UvicornWorker qode_clarity_fastapi.app.main:app --bind :$PORT

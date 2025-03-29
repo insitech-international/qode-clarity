@@ -37,7 +37,7 @@ origins = settings.allowed_origins or [
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
     "http://127.0.0.1:8000",
-    "https://qode-clarity.insitechinternational.com",
+    "https://clarity.insitechinternational.com",
 ]
 
 app.add_middleware(
